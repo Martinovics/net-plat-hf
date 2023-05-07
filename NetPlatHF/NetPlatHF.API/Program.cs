@@ -1,15 +1,16 @@
 using Microsoft.EntityFrameworkCore;
+using NetPlatHF.BLL.Dtos;
 using NetPlatHF.DAL;
+
+
+
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
-// builder.Services.Configure<DbSecrets>(builder.Configuration.GetSection(nameof(DbSecrets)));
 
 
 builder.Services.AddDbContext<AppDbContext>(
@@ -18,9 +19,11 @@ builder.Services.AddDbContext<AppDbContext>(
 );
 
 
+builder.Services.AddAutoMapper(typeof(AutoMapperProfile));  // a dto-hoz kell
 
 
 var app = builder.Build();
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -30,7 +33,5 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseAuthorization();
-
 app.MapControllers();
-
 app.Run();
