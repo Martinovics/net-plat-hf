@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.EntityFrameworkCore;
+using NetPlatHF.API.Authentication;
 using NetPlatHF.API.Options;
 using NetPlatHF.BLL.Dtos;
 using NetPlatHF.DAL;
@@ -40,6 +41,8 @@ builder.Services.AddVersionedApiExplorer(setup =>
 builder.Services.AddSwaggerGen();
 builder.Services.ConfigureOptions<ConfigureSwaggerOptions>();
 
+
+builder.Services.AddScoped<ApiKeyAuthFilter>();
 
 
 
