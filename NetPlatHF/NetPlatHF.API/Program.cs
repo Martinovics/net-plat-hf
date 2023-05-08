@@ -1,4 +1,7 @@
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
+using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.EntityFrameworkCore;
+using NetPlatHF.API.Options;
 using NetPlatHF.BLL.Dtos;
 using NetPlatHF.DAL;
 
@@ -8,28 +11,57 @@ using NetPlatHF.DAL;
 var builder = WebApplication.CreateBuilder(args);
 
 
+
+
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-
-
-builder.Services.AddDbContext<AppDbContext>(
-    options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
-    // options => options.UseSqlServer(builder.Configuration.GetSection("ConnectionStrings")["DefaultConnection"])  // így is lehet
-);
 
 
 builder.Services.AddAutoMapper(typeof(AutoMapperProfile));  // a dto-hoz kell
+builder.Services.AddDbContext<AppDbContext>(
+    options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
+);
+
+
+builder.Services.AddApiVersioning(options =>
+{
+    options.DefaultApiVersion = new Microsoft.AspNetCore.Mvc.ApiVersion(1, 0);
+    options.AssumeDefaultVersionWhenUnspecified = true;
+    options.ReportApiVersions = true;
+    options.ApiVersionReader = ApiVersionReader.Combine(new UrlSegmentApiVersionReader(), new HeaderApiVersionReader("x-api-version"));
+});
+
+builder.Services.AddVersionedApiExplorer(setup =>
+{
+    setup.GroupNameFormat = "'v'VVV";
+    setup.SubstituteApiVersionInUrl = true;
+});
+
+builder.Services.AddSwaggerGen();
+builder.Services.ConfigureOptions<ConfigureSwaggerOptions>();
+
+
 
 
 var app = builder.Build();
 
 
-// Configure the HTTP request pipeline.
+
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(options =>  // hozzá kell adni a swagger endpointokat
+    {
+        var provider = app.Services.GetService<IApiVersionDescriptionProvider>()!;
+        foreach (var description in provider.ApiVersionDescriptions)
+        {
+            options.SwaggerEndpoint(
+                $"{description.GroupName}/swagger.json",
+                description.ApiVersion.ToString()
+                );
+        }
+    });
 }
 
 app.UseAuthorization();
