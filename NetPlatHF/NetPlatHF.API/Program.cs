@@ -5,6 +5,8 @@ using NetPlatHF.API.Authentication;
 using NetPlatHF.API.Options;
 using NetPlatHF.BLL.Dtos;
 using NetPlatHF.DAL;
+using Microsoft.AspNetCore.Identity;
+using NetPlatHF.DAL.Data;
 
 
 
@@ -19,9 +21,14 @@ builder.Services.AddEndpointsApiExplorer();
 
 
 builder.Services.AddAutoMapper(typeof(AutoMapperProfile));  // a dto-hoz kell
-builder.Services.AddDbContext<AppDbContext>(
+/*builder.Services.AddDbContext<AppDbContext>(
     options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
+);*/
+builder.Services.AddDbContext<IdentityAppDbContext>(
+    options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"),
+    b => b.MigrationsAssembly("NetPlatHF.DAL"))
 );
+builder.Services.AddDefaultIdentity<AppUser>(options => options.SignIn.RequireConfirmedAccount = false).AddEntityFrameworkStores<IdentityAppDbContext>();
 
 
 builder.Services.AddApiVersioning(options =>
@@ -54,7 +61,7 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI(options =>  // hozzá kell adni a swagger endpointokat
+    app.UseSwaggerUI(options =>  // hozzï¿½ kell adni a swagger endpointokat
     {
         var provider = app.Services.GetService<IApiVersionDescriptionProvider>()!;
         foreach (var description in provider.ApiVersionDescriptions)
@@ -69,4 +76,6 @@ if (app.Environment.IsDevelopment())
 
 app.UseAuthorization();
 app.MapControllers();
+app.MapRazorPages();
+app.UseStaticFiles();
 app.Run();
