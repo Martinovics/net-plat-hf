@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Identity;
 using NetPlatHF.DAL.Data;
 using NetPlatHF.BLL.Interfaces;
 using NetPlatHF.BLL.Services;
+using NetPlatHF.BLL.QueryParamResolvers;
 
 var builder = WebApplication.CreateBuilder(args);
 
