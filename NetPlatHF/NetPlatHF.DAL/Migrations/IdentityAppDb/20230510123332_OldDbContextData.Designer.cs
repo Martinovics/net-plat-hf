@@ -11,7 +11,7 @@ using NetPlatHF.DAL.Data;
 
 namespace NetPlatHF.DAL.Migrations.IdentityAppDb
 {
-    [DbContext(typeof(IdentityAppDbContext))]
+    [DbContext(typeof(AppDbContext))]
     [Migration("20230510123332_OldDbContextData")]
     partial class OldDbContextData
     {

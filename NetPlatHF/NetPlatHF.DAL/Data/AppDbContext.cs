@@ -8,9 +8,9 @@ using System.Reflection.Emit;
 
 namespace NetPlatHF.DAL.Data;
 
-public class IdentityAppDbContext : IdentityDbContext<AppUser>
+public class AppDbContext : IdentityDbContext<AppUser>
 {
-    public IdentityAppDbContext(DbContextOptions<IdentityAppDbContext> options) : base(options)
+    public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
     {
     }
 

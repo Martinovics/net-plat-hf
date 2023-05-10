@@ -10,7 +10,7 @@ using NetPlatHF.DAL.Data;
 
 namespace NetPlatHF.DAL.Migrations.IdentityAppDb
 {
-    [DbContext(typeof(IdentityAppDbContext))]
+    [DbContext(typeof(AppDbContext))]
     partial class IdentityAppDbContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)

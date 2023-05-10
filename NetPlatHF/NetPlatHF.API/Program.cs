@@ -23,11 +23,11 @@ builder.Services.AddAutoMapper(typeof(AutoMapperProfile));  // a dto-hoz kell
 /*builder.Services.AddDbContext<AppDbContext>(
     options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
 );*/
-builder.Services.AddDbContext<IdentityAppDbContext>(
+builder.Services.AddDbContext<AppDbContext>(
     options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"),
     b => b.MigrationsAssembly("NetPlatHF.DAL"))
 );
-builder.Services.AddDefaultIdentity<AppUser>(options => options.SignIn.RequireConfirmedAccount = false).AddEntityFrameworkStores<IdentityAppDbContext>();
+builder.Services.AddDefaultIdentity<AppUser>(options => options.SignIn.RequireConfirmedAccount = false).AddEntityFrameworkStores<AppDbContext>();
 
 
 builder.Services.AddApiVersioning(options =>
@@ -49,6 +49,8 @@ builder.Services.ConfigureOptions<ConfigureSwaggerOptions>();
 
 builder.Services.AddScoped<IApiKeyService, ApiKeyService>();
 builder.Services.AddScoped<ApiKeyAuthFilter>();
+
+builder.Services.AddTransient<IExerciseTemplateService, ExerciseTemplateService>();
 
 
 
