@@ -1,6 +1,6 @@
 # net-plat-hf
 
-### ASP.NET API alkalmazás edzéstervek létrehozásához és menedzseléséhez.
+ASP.NET API alkalmazás edzéstervek létrehozásához és menedzseléséhez.
 
 </br>
 
