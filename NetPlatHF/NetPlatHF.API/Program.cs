@@ -7,9 +7,8 @@ using NetPlatHF.BLL.Dtos;
 using NetPlatHF.DAL;
 using Microsoft.AspNetCore.Identity;
 using NetPlatHF.DAL.Data;
-
-
-
+using NetPlatHF.BLL.Interfaces;
+using NetPlatHF.BLL.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -48,7 +47,7 @@ builder.Services.AddVersionedApiExplorer(setup =>
 builder.Services.AddSwaggerGen();
 builder.Services.ConfigureOptions<ConfigureSwaggerOptions>();
 
-
+builder.Services.AddScoped<IApiKeyService, ApiKeyService>();
 builder.Services.AddScoped<ApiKeyAuthFilter>();
 
 
