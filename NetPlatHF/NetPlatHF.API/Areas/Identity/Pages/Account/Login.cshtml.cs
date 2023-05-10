@@ -116,7 +116,9 @@ namespace NetPlatHF.API.Areas.Identity.Pages.Account
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User logged in.");
-                    return LocalRedirect(returnUrl);
+                    var user = await _signInManager.UserManager.FindByEmailAsync(Input.Email);
+                    return new JsonResult(new { ApiKey = user.ApiKey }) { StatusCode = 200 };
+                    // return LocalRedirect(returnUrl);
                 }
                 if (result.RequiresTwoFactor)
                 {
