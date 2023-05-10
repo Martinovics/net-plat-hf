@@ -4,14 +4,21 @@
 
 #pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
 
-namespace NetPlatHF.DAL.Migrations
+namespace NetPlatHF.DAL.Migrations.IdentityAppDb
 {
     /// <inheritdoc />
-    public partial class Templates : Migration
+    public partial class OldDbContextData : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.AddColumn<string>(
+                name: "ApiKey",
+                table: "AspNetUsers",
+                type: "nvarchar(max)",
+                nullable: false,
+                defaultValue: "");
+
             migrationBuilder.CreateTable(
                 name: "ExerciseTemplates",
                 columns: table => new
@@ -147,6 +154,10 @@ namespace NetPlatHF.DAL.Migrations
 
             migrationBuilder.DropTable(
                 name: "GroupTemplates");
+
+            migrationBuilder.DropColumn(
+                name: "ApiKey",
+                table: "AspNetUsers");
         }
     }
 }
