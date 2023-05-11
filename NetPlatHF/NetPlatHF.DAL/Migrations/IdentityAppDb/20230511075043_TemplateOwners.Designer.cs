@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetPlatHF.DAL.Data;
 
@@ -11,9 +12,11 @@ using NetPlatHF.DAL.Data;
 namespace NetPlatHF.DAL.Migrations.IdentityAppDb
 {
     [DbContext(typeof(AppDbContext))]
-    partial class IdentityAppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230511075043_TemplateOwners")]
+    partial class TemplateOwners
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -259,7 +262,7 @@ namespace NetPlatHF.DAL.Migrations.IdentityAppDb
 
                     b.HasIndex("OwnerId");
 
-                    b.ToTable("ExerciseTemplates", (string)null);
+                    b.ToTable("ExerciseTemplates");
 
                     b.HasData(
                         new
@@ -431,7 +434,7 @@ namespace NetPlatHF.DAL.Migrations.IdentityAppDb
 
                     b.HasIndex("GroupId");
 
-                    b.ToTable("GroupExerciseTemplate", (string)null);
+                    b.ToTable("GroupExerciseTemplate");
 
                     b.HasData(
                         new
@@ -526,7 +529,7 @@ namespace NetPlatHF.DAL.Migrations.IdentityAppDb
 
                     b.HasIndex("OwnerId");
 
-                    b.ToTable("GroupTemplates", (string)null);
+                    b.ToTable("GroupTemplates");
 
                     b.HasData(
                         new

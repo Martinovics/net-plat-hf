@@ -39,16 +39,30 @@ public class AppDbContext : IdentityDbContext<AppUser>
             .Property(et => et.Description)
             .HasMaxLength(50);
 
+        builder.Entity<ExerciseTemplate>()
+            .HasOne(t => t.Owner)
+            .WithMany()
+            .HasForeignKey(t => t.OwnerId)
+            .IsRequired(false);
+            //.OnDelete(DeleteBehavior.Cascade);  // cascady cycle hiba
+
 
         builder.Entity<GroupTemplate>()
             .Property(gt => gt.Name)
             .HasMaxLength(30)
-        .IsRequired();
+            .IsRequired();
 
         builder.Entity<GroupTemplate>()
             .Property(gt => gt.Name)
             .HasMaxLength(50)
             .IsRequired();
+
+        builder.Entity<GroupTemplate>()
+            .HasOne(t => t.Owner)
+            .WithMany()
+            .HasForeignKey(t => t.OwnerId)
+            .IsRequired(false);
+            //.OnDelete(DeleteBehavior.Cascade);  // cascady cycle hiba
 
 
         // many-to-many templates
