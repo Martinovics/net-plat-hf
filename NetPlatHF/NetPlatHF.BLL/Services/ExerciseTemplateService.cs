@@ -1,4 +1,6 @@
-﻿using NetPlatHF.BLL.Interfaces;
+﻿using Microsoft.EntityFrameworkCore;
+using NetPlatHF.BLL.Exceptions;
+using NetPlatHF.BLL.Interfaces;
 using NetPlatHF.BLL.QueryParamResolvers;
 using NetPlatHF.DAL.Data;
 using NetPlatHF.DAL.Entities;
@@ -19,13 +21,57 @@ public class ExerciseTemplateService : IExerciseTemplateService
         _context = context;
     }
 
+    
 
     public IEnumerable<ExerciseTemplate> GetExerciseTemplates(ExerciseTemplateQueryParamResolver resolvedParams)
     {
-        var exerciseTemplates = _context.ExerciseTemplates.AsQueryable().ApplyQueryParams(resolvedParams);
+        var exerciseTemplates = _context.ExerciseTemplates.AsQueryable().ApplyQueryParams(resolvedParams).Where(x => x.OwnerId == null);
         return exerciseTemplates.ToList();
     }
 
+
+    public IEnumerable<ExerciseTemplate> GetUserExerciseTemplates(ExerciseTemplateQueryParamResolver resolvedParams, string apiKey)
+    {
+        var exerciseTemplates = _context.ExerciseTemplates
+            .Include(x => x.Owner)
+            .AsQueryable()
+            .ApplyQueryParams(resolvedParams)
+            .Where(x => x.Owner.ApiKey == apiKey);
+        return exerciseTemplates.ToList();
+    }
+
+
+    public ExerciseTemplate GetUserExerciseTemplate(int id, string apiKey)
+    {
+        var exerciseTemplate = _context.ExerciseTemplates.Include(x => x.Owner).Where(x => x.Id == id && x.Owner!.ApiKey == apiKey).SingleOrDefault();
+        if (exerciseTemplate == null)
+        {
+            throw new ExerciseTemplateNotFoundException($"User exercise template with {id} not found");
+        }
+        return exerciseTemplate;
+    }
+
+
+    public ExerciseTemplate InsertUserExerciseTemplate(ExerciseTemplate newExerciseTemplate, string userApiKey)
+    {
+        var owner = _context.Users.Single(x => x.ApiKey == userApiKey);
+        newExerciseTemplate.Owner = owner;
+        _context.ExerciseTemplates.Add(newExerciseTemplate);
+        _context.SaveChanges();
+        return GetUserExerciseTemplate(newExerciseTemplate.Id, userApiKey);
+    }
+
+    
+    public void UpdateUserExerciseTemplate(int exerciseTemplateId, ExerciseTemplate updatedExerciseTemplate, string userApiKey)
+    {
+        throw new NotImplementedException();
+    }
+
+
+    public void DeleteUserExerciseTemplate(int exerciseTemplateId, string userApiKey)
+    {
+        throw new NotImplementedException();
+    }
 
     
 }

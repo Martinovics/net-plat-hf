@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using NetPlatHF.API.Authentication;
 using NetPlatHF.BLL.Interfaces;
 using NetPlatHF.BLL.QueryParamResolvers;
 using NetPlatHF.BLL.Services;
@@ -17,11 +18,13 @@ namespace NetPlatHF.API.Controllers.v1;
 public class ExerciseTemplatesController : ControllerBase
 {
     private readonly IExerciseTemplateService _exerciseTemplateService;
+    private readonly IConfiguration _configuration;
 
 
-    public ExerciseTemplatesController(IExerciseTemplateService exerciseTemplateService)
+    public ExerciseTemplatesController(IExerciseTemplateService exerciseTemplateService, IConfiguration configuration)
     {
         _exerciseTemplateService = exerciseTemplateService;
+        _configuration = configuration;
     }
 
 
@@ -32,5 +35,49 @@ public class ExerciseTemplatesController : ControllerBase
     public IEnumerable<ExerciseTemplate> Get([FromQuery] ExerciseTemplateQueryParamResolver resolvedParams)
     {
         return _exerciseTemplateService.GetExerciseTemplates(resolvedParams);
+    }
+
+    [MapToApiVersion("1.0")]
+    [HttpGet("self")]
+    [ServiceFilter(typeof(ApiKeyAuthFilter))]
+    public IEnumerable<ExerciseTemplate> GetSelf([FromQuery] ExerciseTemplateQueryParamResolver resolvedParams)
+    {
+        return _exerciseTemplateService.GetUserExerciseTemplates(resolvedParams, FetchApiKey(HttpContext.Request.Headers));
+    }
+
+
+    [MapToApiVersion("1.0")]
+    [HttpGet("{id}")]
+    [ServiceFilter(typeof(ApiKeyAuthFilter))]
+    public ActionResult<ExerciseTemplate> GetById(int id)
+    {
+        return Ok(_exerciseTemplateService.GetUserExerciseTemplate(id, FetchApiKey(HttpContext.Request.Headers)));
+    }
+
+    /*
+    post create exercise
+    put update exercise
+    delete exercise
+    */
+
+
+    [HttpPost]
+    [MapToApiVersion("1.0")]
+    [ServiceFilter(typeof(ApiKeyAuthFilter))]
+    public ActionResult<ExerciseTemplate> Post([FromBody] ExerciseTemplate exerciseTemplate)
+    {
+        var inserted = _exerciseTemplateService.InsertUserExerciseTemplate(exerciseTemplate, FetchApiKey(HttpContext.Request.Headers));
+        return CreatedAtAction(nameof(GetById), new {id = inserted.Id}, inserted);
+    }
+
+
+
+
+
+    private string FetchApiKey(IHeaderDictionary headers)
+    {
+        string apiKeyName = _configuration.GetValue<string>("Auth:ApiKeyName")!;
+        headers.TryGetValue(apiKeyName, out var providedKey);
+        return providedKey!.ToString();  // nem lehet null a filter miatt
     }
 }
