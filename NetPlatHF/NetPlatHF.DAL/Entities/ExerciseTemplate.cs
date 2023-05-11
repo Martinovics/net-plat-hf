@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using NetPlatHF.DAL.Data;
+using System.ComponentModel.DataAnnotations;
 
 namespace NetPlatHF.DAL.Entities;
 
@@ -14,7 +15,8 @@ public class ExerciseTemplate
     public string Description { get; set; } = string.Empty;
     public ICollection<GroupTemplate> Groups { get; } = new List<GroupTemplate>();
     public ICollection<GroupExerciseTemplate> GroupExercises { get; } = new List<GroupExerciseTemplate>();
-    public int OwnerId { get; set; }
+    public string? OwnerId { get; set; }  // foreign key 
+    public AppUser? Owner { get; set; }
 
 
     public ExerciseTemplate(string name)
