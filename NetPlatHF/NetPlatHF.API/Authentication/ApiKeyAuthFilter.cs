@@ -17,7 +17,7 @@ public class ApiKeyAuthFilter : IAuthorizationFilter
 
     public ApiKeyAuthFilter(IConfiguration configuration, IApiKeyService apiKeyService)
     {
-        _configuration= configuration;
+        _configuration = configuration;
         _apiKeyService = apiKeyService;
     }
 
