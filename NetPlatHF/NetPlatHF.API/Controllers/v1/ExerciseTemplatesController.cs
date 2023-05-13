@@ -72,6 +72,21 @@ public class ExerciseTemplatesController : ControllerBase
 
 
 
+    [HttpDelete("{id}")]
+    [MapToApiVersion("1.0")]
+    [ServiceFilter(typeof(ApiKeyAuthFilter))]
+    public ActionResult Delete(int id)
+    {
+        var success = _exerciseTemplateService.DeleteUserExerciseTemplate(id, FetchApiKey(HttpContext.Request.Headers));
+        if (success)
+        {
+            return NoContent();
+        }
+        return BadRequest();
+    }
+
+
+
 
 
     private string FetchApiKey(IHeaderDictionary headers)

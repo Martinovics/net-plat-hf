@@ -12,6 +12,6 @@ public interface IExerciseTemplateService
     public IEnumerable<ExerciseTemplate> GetUserExerciseTemplates(ExerciseTemplateQueryParamResolver resolvedParams, string apiKey);
     public ExerciseTemplate GetUserExerciseTemplate(int id, string apiKey);
     public ExerciseTemplate InsertUserExerciseTemplate(ExerciseTemplate newExerciseTemplate, string userApiKey);
-    public void UpdateUserExerciseTemplate(int exerciseTemplateId, ExerciseTemplate updatedExerciseTemplate, string userApiKey);
-    public void DeleteUserExerciseTemplate(int exerciseTemplateId, string userApiKey);
+    public bool UpdateUserExerciseTemplate(int exerciseTemplateId, ExerciseTemplate updatedExerciseTemplate, string userApiKey);
+    public bool DeleteUserExerciseTemplate(int exerciseTemplateId, string userApiKey);
 }

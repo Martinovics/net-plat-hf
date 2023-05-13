@@ -62,15 +62,27 @@ public class ExerciseTemplateService : IExerciseTemplateService
     }
 
     
-    public void UpdateUserExerciseTemplate(int exerciseTemplateId, ExerciseTemplate updatedExerciseTemplate, string userApiKey)
+    public bool UpdateUserExerciseTemplate(int exerciseTemplateId, ExerciseTemplate updatedExerciseTemplate, string userApiKey)
     {
-        throw new NotImplementedException();
+        
+        return true;
     }
 
 
-    public void DeleteUserExerciseTemplate(int exerciseTemplateId, string userApiKey)
+    public bool DeleteUserExerciseTemplate(int exerciseTemplateId, string userApiKey)
     {
-        throw new NotImplementedException();
+        ExerciseTemplate exerciseTemplate;
+        try
+        {
+            exerciseTemplate = GetUserExerciseTemplate(exerciseTemplateId, userApiKey);
+        }
+        catch (ExerciseTemplateNotFoundException)
+        {
+            return false;
+        }
+        _context.ExerciseTemplates.Remove(exerciseTemplate);
+        _context.SaveChanges();
+        return true;
     }
 
     
