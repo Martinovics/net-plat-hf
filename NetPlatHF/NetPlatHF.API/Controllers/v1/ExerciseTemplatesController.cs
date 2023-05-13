@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NetPlatHF.API.Authentication;
+using NetPlatHF.BLL.Exceptions;
 using NetPlatHF.BLL.Interfaces;
 using NetPlatHF.BLL.QueryParamResolvers;
 using NetPlatHF.BLL.Services;
@@ -51,7 +52,14 @@ public class ExerciseTemplatesController : ControllerBase
     [ServiceFilter(typeof(ApiKeyAuthFilter))]
     public ActionResult<ExerciseTemplate> GetById(int id)
     {
-        return Ok(_exerciseTemplateService.GetUserExerciseTemplate(id, FetchApiKey(HttpContext.Request.Headers)));
+        try
+        {
+            return Ok(_exerciseTemplateService.GetUserExerciseTemplate(id, FetchApiKey(HttpContext.Request.Headers)));
+        }
+        catch (ExerciseTemplateNotFoundException)
+        {
+            return NotFound();
+        }
     }
 
     /*
@@ -78,6 +86,21 @@ public class ExerciseTemplatesController : ControllerBase
     public ActionResult Delete(int id)
     {
         var success = _exerciseTemplateService.DeleteUserExerciseTemplate(id, FetchApiKey(HttpContext.Request.Headers));
+        if (success)
+        {
+            return NoContent();
+        }
+        return BadRequest();
+    }
+
+
+
+    [HttpPut("{id}")]
+    [MapToApiVersion("1.0")]
+    [ServiceFilter(typeof(ApiKeyAuthFilter))]
+    public ActionResult HttpPut(int id, [FromBody] ExerciseTemplate updatedExerciseTemplate)
+    {
+        var success = _exerciseTemplateService.UpdateUserExerciseTemplate(id, updatedExerciseTemplate, FetchApiKey(HttpContext.Request.Headers));
         if (success)
         {
             return NoContent();

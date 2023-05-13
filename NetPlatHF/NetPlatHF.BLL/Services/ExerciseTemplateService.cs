@@ -64,7 +64,22 @@ public class ExerciseTemplateService : IExerciseTemplateService
     
     public bool UpdateUserExerciseTemplate(int exerciseTemplateId, ExerciseTemplate updatedExerciseTemplate, string userApiKey)
     {
-        
+        ExerciseTemplate exerciseTemplate;
+        try
+        {
+            exerciseTemplate = GetUserExerciseTemplate(exerciseTemplateId, userApiKey);
+        }
+        catch (ExerciseTemplateNotFoundException)
+        {
+            return false;
+        }
+
+        exerciseTemplate.Name = updatedExerciseTemplate.Name;
+        exerciseTemplate.Muscle = updatedExerciseTemplate.Muscle;
+        exerciseTemplate.Description = updatedExerciseTemplate.Description;
+
+        _context.Update(exerciseTemplate);
+        _context.SaveChanges();
         return true;
     }
 
@@ -85,7 +100,7 @@ public class ExerciseTemplateService : IExerciseTemplateService
         return true;
     }
 
-    
+
 }
 
 
