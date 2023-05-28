@@ -1,10 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using NetPlatHF.BLL.Exceptions;
 using NetPlatHF.BLL.Interfaces;
 using NetPlatHF.BLL.QueryParamResolvers;
 using NetPlatHF.DAL.Data;
 using NetPlatHF.DAL.Entities;
-using System;
+using System.Data;
+using System.Diagnostics;
 
 namespace NetPlatHF.BLL.Services;
 
@@ -13,94 +13,89 @@ namespace NetPlatHF.BLL.Services;
 
 public class ExerciseTemplateService : IExerciseTemplateService
 {
-    private readonly AppDbContext _context;
+    private readonly AppDbContext _ctx;
 
 
     public ExerciseTemplateService(AppDbContext context)
     {
-        _context = context;
+        _ctx = context;
+    }
+
+
+
+
+    public IReadOnlyCollection<Dtos.ExerciseTemplate> ListTemplates()
+    {
+        return _ctx.ExerciseTemplates.Include(x => x.Owner).Where(x => x.OwnerId == null).Select(ToModel).ToList();
+    }
+
+
+
+
+    public IReadOnlyCollection<Dtos.ExerciseTemplate> ListUserTemplates(string userApiKey)
+    {
+        return _ctx.ExerciseTemplates.Include(x => x.Owner).Where(x => x.Owner!.ApiKey == userApiKey).Select(ToModel).ToList();
+    }
+
+
+
+
+    public Dtos.ExerciseTemplate Insert(Dtos.CreateExerciseTemplate newTemplate, string userApiKey)
+    {
+        var transaction = _ctx.Database.BeginTransaction(IsolationLevel.RepeatableRead);
+        
+        var owner = GetOwner(userApiKey);
+        var template = new ExerciseTemplate(newTemplate.Name)
+        {
+            Muscle = newTemplate?.Muscle ?? "",
+            Description = newTemplate?.Description ?? "",
+            Owner = owner
+        };
+
+
+        _ctx.ExerciseTemplates.Add(template);
+        _ctx.SaveChanges();
+        transaction.Commit();
+        
+        return ToModel(template);
+    }
+
+
+
+
+    public Dtos.ExerciseTemplate? GetTemplateById(int id)
+    {
+        var template = _ctx.ExerciseTemplates.SingleOrDefault(x => x.Id == id);
+        return template == null ? null : ToModel(template);
+    }
+
+
+
+
+    public Dtos.ExerciseTemplate? GetUserTemplateById(int id, string apiKey)
+    {
+        var owner = GetOwner(apiKey);
+        var template = _ctx.ExerciseTemplates.SingleOrDefault(x => x.Id == id);
+        return template == null ? null : ToModel(template);
+    }
+
+
+
+
+    private AppUser? GetOwner(string apiKey)  // ne legyen nullozhato
+    {
+        return _ctx.Users.Where(u => u.ApiKey == apiKey).SingleOrDefault();
+    }
+
+
+
+
+    private Dtos.ExerciseTemplate ToModel(ExerciseTemplate exerciseTemplate)
+    {
+        return new Dtos.ExerciseTemplate(exerciseTemplate.Id, exerciseTemplate.Name, exerciseTemplate.Muscle, exerciseTemplate.Description);
     }
 
     
-
-    public IEnumerable<ExerciseTemplate> GetExerciseTemplates(ExerciseTemplateQueryParamResolver resolvedParams)
-    {
-        var exerciseTemplates = _context.ExerciseTemplates.AsQueryable().ApplyQueryParams(resolvedParams).Where(x => x.OwnerId == null);
-        return exerciseTemplates.ToList();
-    }
-
-
-    public IEnumerable<ExerciseTemplate> GetUserExerciseTemplates(ExerciseTemplateQueryParamResolver resolvedParams, string apiKey)
-    {
-        var exerciseTemplates = _context.ExerciseTemplates
-            .Include(x => x.Owner)
-            .AsQueryable()
-            .ApplyQueryParams(resolvedParams)
-            .Where(x => x.Owner.ApiKey == apiKey);
-        return exerciseTemplates.ToList();
-    }
-
-
-    public ExerciseTemplate GetUserExerciseTemplate(int id, string apiKey)
-    {
-        var exerciseTemplate = _context.ExerciseTemplates.Include(x => x.Owner).Where(x => x.Id == id && x.Owner!.ApiKey == apiKey).SingleOrDefault();
-        if (exerciseTemplate == null)
-        {
-            throw new ExerciseTemplateNotFoundException($"User exercise template with {id} not found");
-        }
-        return exerciseTemplate;
-    }
-
-
-    public ExerciseTemplate InsertUserExerciseTemplate(ExerciseTemplate newExerciseTemplate, string userApiKey)
-    {
-        var owner = _context.Users.Single(x => x.ApiKey == userApiKey);
-        newExerciseTemplate.Owner = owner;
-        _context.ExerciseTemplates.Add(newExerciseTemplate);
-        _context.SaveChanges();
-        return GetUserExerciseTemplate(newExerciseTemplate.Id, userApiKey);
-    }
-
-    
-    public bool UpdateUserExerciseTemplate(int exerciseTemplateId, ExerciseTemplate updatedExerciseTemplate, string userApiKey)
-    {
-        ExerciseTemplate exerciseTemplate;
-        try
-        {
-            exerciseTemplate = GetUserExerciseTemplate(exerciseTemplateId, userApiKey);
-        }
-        catch (ExerciseTemplateNotFoundException)
-        {
-            return false;
-        }
-
-        exerciseTemplate.Name = updatedExerciseTemplate.Name;
-        exerciseTemplate.Muscle = updatedExerciseTemplate.Muscle;
-        exerciseTemplate.Description = updatedExerciseTemplate.Description;
-
-        _context.Update(exerciseTemplate);
-        _context.SaveChanges();
-        return true;
-    }
-
-
-    public bool DeleteUserExerciseTemplate(int exerciseTemplateId, string userApiKey)
-    {
-        ExerciseTemplate exerciseTemplate;
-        try
-        {
-            exerciseTemplate = GetUserExerciseTemplate(exerciseTemplateId, userApiKey);
-        }
-        catch (ExerciseTemplateNotFoundException)
-        {
-            return false;
-        }
-        _context.ExerciseTemplates.Remove(exerciseTemplate);
-        _context.SaveChanges();
-        return true;
-    }
-
-
 }
 
 

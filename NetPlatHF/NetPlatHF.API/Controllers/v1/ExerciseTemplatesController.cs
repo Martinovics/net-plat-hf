@@ -6,6 +6,10 @@ using NetPlatHF.BLL.Interfaces;
 using NetPlatHF.BLL.QueryParamResolvers;
 using NetPlatHF.BLL.Services;
 using NetPlatHF.DAL.Entities;
+using System.Net.Http.Headers;
+using NetPlatHF.BLL.Dtos;
+using Newtonsoft.Json.Linq;
+
 
 namespace NetPlatHF.API.Controllers.v1;
 
@@ -33,89 +37,66 @@ public class ExerciseTemplatesController : ControllerBase
 
     [MapToApiVersion("1.0")]
     [HttpGet]
-    public IEnumerable<ExerciseTemplate> Get([FromQuery] ExerciseTemplateQueryParamResolver resolvedParams)
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public IEnumerable<BLL.Dtos.ExerciseTemplate> List()
     {
-        return _exerciseTemplateService.GetExerciseTemplates(resolvedParams);
+        return _exerciseTemplateService.ListTemplates();
     }
+
+
+
 
     [MapToApiVersion("1.0")]
     [HttpGet("self")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     [ServiceFilter(typeof(ApiKeyAuthFilter))]
-    public IEnumerable<ExerciseTemplate> GetSelf([FromQuery] ExerciseTemplateQueryParamResolver resolvedParams)
+    public IEnumerable<BLL.Dtos.ExerciseTemplate> ListSelf()
     {
-        return _exerciseTemplateService.GetUserExerciseTemplates(resolvedParams, FetchApiKey(HttpContext.Request.Headers));
+        var apiKey = FetchApiKey(HttpContext);
+        return _exerciseTemplateService.ListUserTemplates(apiKey);
     }
+
+
 
 
     [MapToApiVersion("1.0")]
     [HttpGet("{id}")]
-    [ServiceFilter(typeof(ApiKeyAuthFilter))]
-    public ActionResult<ExerciseTemplate> GetById(int id)
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public ActionResult<BLL.Dtos.ExerciseTemplate> Get(int id)  // TODO: at kell irni, hogy mukodjon amikor megadjuk az api kulcsot is
     {
-        try
-        {
-            return Ok(_exerciseTemplateService.GetUserExerciseTemplate(id, FetchApiKey(HttpContext.Request.Headers)));
-        }
-        catch (ExerciseTemplateNotFoundException)
-        {
-            return NotFound();
-        }
+        var template = _exerciseTemplateService.GetTemplateById(id);
+        return template != null ? Ok(template) : NotFound();
     }
 
-    /*
-    post create exercise
-    put update exercise
-    delete exercise
-    */
+
 
 
     [HttpPost]
-    [MapToApiVersion("1.0")]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ServiceFilter(typeof(ApiKeyAuthFilter))]
-    public ActionResult<ExerciseTemplate> Post([FromBody] ExerciseTemplate exerciseTemplate)
+    public ActionResult<BLL.Dtos.ExerciseTemplate> Create([FromBody] CreateExerciseTemplate newTemplate)
     {
-        var inserted = _exerciseTemplateService.InsertUserExerciseTemplate(exerciseTemplate, FetchApiKey(HttpContext.Request.Headers));
-        return CreatedAtAction(nameof(GetById), new {id = inserted.Id}, inserted);
-    }
-
-
-
-    [HttpDelete("{id}")]
-    [MapToApiVersion("1.0")]
-    [ServiceFilter(typeof(ApiKeyAuthFilter))]
-    public ActionResult Delete(int id)
-    {
-        var success = _exerciseTemplateService.DeleteUserExerciseTemplate(id, FetchApiKey(HttpContext.Request.Headers));
-        if (success)
+        try
         {
-            return NoContent();
+            var created = _exerciseTemplateService.Insert(newTemplate, FetchApiKey(HttpContext));
+            return CreatedAtAction(nameof(Get), new { id = created.Id }, created);
         }
-        return BadRequest();
-    }
-
-
-
-    [HttpPut("{id}")]
-    [MapToApiVersion("1.0")]
-    [ServiceFilter(typeof(ApiKeyAuthFilter))]
-    public ActionResult HttpPut(int id, [FromBody] ExerciseTemplate updatedExerciseTemplate)
-    {
-        var success = _exerciseTemplateService.UpdateUserExerciseTemplate(id, updatedExerciseTemplate, FetchApiKey(HttpContext.Request.Headers));
-        if (success)
+        catch (ArgumentException ex)
         {
-            return NoContent();
+            ModelState.AddModelError(nameof(CreateExerciseTemplate.Name), ex.Message);
+            return ValidationProblem(ModelState);
         }
-        return BadRequest();
     }
 
 
 
 
-
-    private string FetchApiKey(IHeaderDictionary headers)
+    private string FetchApiKey(HttpContext httpContext)
     {
         string apiKeyName = _configuration.GetValue<string>("Auth:ApiKeyName")!;
-        headers.TryGetValue(apiKeyName, out var providedKey);
+        httpContext.Request.Headers.TryGetValue(apiKeyName, out var providedKey);
         return providedKey!.ToString();  // nem lehet null a filter miatt
     }
 }
