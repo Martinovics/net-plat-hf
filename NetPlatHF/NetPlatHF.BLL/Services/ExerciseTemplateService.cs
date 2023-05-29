@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using NetPlatHF.BLL.Interfaces;
 using NetPlatHF.BLL.QueryParamResolvers;
 using NetPlatHF.DAL.Data;
@@ -63,20 +64,44 @@ public class ExerciseTemplateService : IExerciseTemplateService
 
 
 
-    public Dtos.ExerciseTemplate? GetTemplateById(int id)
+    public Dtos.ExerciseTemplate? GetTemplateById(int id, string? apiKey)
     {
-        var template = _ctx.ExerciseTemplates.SingleOrDefault(x => x.Id == id);
+        ExerciseTemplate? template;
+        if (apiKey.IsNullOrEmpty())
+        {
+            template = _ctx.ExerciseTemplates.Include(x => x.Owner).Where(x => x.Id == id && x.Owner == null).SingleOrDefault();
+        }
+        else
+        {
+            template = GetUserTemplate(id, apiKey);
+        }
+
         return template == null ? null : ToModel(template);
     }
 
 
 
 
-    public Dtos.ExerciseTemplate? GetUserTemplateById(int id, string apiKey)
+    public Dtos.ExerciseTemplate? Update(int id, Dtos.UpdateExerciseTemplate newTemplate, string userApiKey)
     {
-        var owner = GetOwner(apiKey);
-        var template = _ctx.ExerciseTemplates.SingleOrDefault(x => x.Id == id);
-        return template == null ? null : ToModel(template);
+        var template = GetUserTemplate(id, userApiKey);
+        if (template == null)
+            return null;
+
+        template.Name = newTemplate?.Name ?? template.Name;
+        template.Muscle = newTemplate?.Muscle ?? template.Muscle;
+        template.Description = newTemplate?.Description ?? template.Description;
+
+        _ctx.SaveChanges();
+        return ToModel(template);
+    }
+
+
+
+
+    public Dtos.ExerciseTemplate Delete(int id, string userApiKey)
+    {
+        throw new NotImplementedException();
     }
 
 
@@ -87,6 +112,17 @@ public class ExerciseTemplateService : IExerciseTemplateService
         return _ctx.Users.Where(u => u.ApiKey == apiKey).SingleOrDefault();
     }
 
+
+
+    private ExerciseTemplate? GetUserTemplate(int id, string apiKey)
+    {
+        var owner = GetOwner(apiKey);
+        if (owner == null)
+            return null;
+
+        var ownerID = owner.Id;
+        return _ctx.ExerciseTemplates.Where(x => x.Id == id && x.OwnerId == ownerID).SingleOrDefault();
+    }
 
 
 

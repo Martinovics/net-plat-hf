@@ -63,9 +63,16 @@ public class ExerciseTemplatesController : ControllerBase
     [HttpGet("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public ActionResult<BLL.Dtos.ExerciseTemplate> Get(int id)  // TODO: at kell irni, hogy mukodjon amikor megadjuk az api kulcsot is
+    public ActionResult<BLL.Dtos.ExerciseTemplate> Get(int id)
     {
-        var template = _exerciseTemplateService.GetTemplateById(id);
+        string? apiKey = null;
+        try
+        {
+            apiKey = FetchApiKey(HttpContext);
+        } 
+        catch (Exception) { }
+
+        var template = _exerciseTemplateService.GetTemplateById(id, apiKey);
         return template != null ? Ok(template) : NotFound();
     }
 
