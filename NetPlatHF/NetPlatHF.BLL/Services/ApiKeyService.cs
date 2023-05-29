@@ -7,7 +7,7 @@ namespace NetPlatHF.BLL.Services;
 
 
 
-public class ApiKeyService : IApiKeyService
+public class ApiKeyService : IApiKeyService  // TODO ide is siman at lehet adni a db contextet
 {
     private readonly UserManager<AppUser> _userManager;
 
