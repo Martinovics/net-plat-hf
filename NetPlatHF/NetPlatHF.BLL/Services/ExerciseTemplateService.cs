@@ -92,14 +92,14 @@ public class ExerciseTemplateService : IExerciseTemplateService
         template.Muscle = newTemplate?.Muscle ?? template.Muscle;
         template.Description = newTemplate?.Description ?? template.Description;
 
-        _ctx.SaveChanges();
+        _ctx.SaveChanges();  // TODO ha nem sikerul frissiteni pl a name hossza miatt akkor dobhat hibat
         return ToModel(template);
     }
 
 
 
 
-    public Dtos.ExerciseTemplate Delete(int id, string userApiKey)
+    public Dtos.ExerciseTemplate? Delete(int id, string userApiKey)
     {
         throw new NotImplementedException();
     }

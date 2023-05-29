@@ -69,7 +69,7 @@ public class ExerciseTemplatesController : ControllerBase
         try
         {
             apiKey = FetchApiKey(HttpContext);
-        } 
+        }
         catch (Exception) { }
 
         var template = _exerciseTemplateService.GetTemplateById(id, apiKey);
@@ -95,6 +95,19 @@ public class ExerciseTemplatesController : ControllerBase
             ModelState.AddModelError(nameof(CreateExerciseTemplate.Name), ex.Message);
             return ValidationProblem(ModelState);
         }
+    }
+
+
+
+
+    [HttpPatch("{id}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ServiceFilter(typeof(ApiKeyAuthFilter))]
+    public ActionResult<BLL.Dtos.ExerciseTemplate> Update(int id, [FromBody] UpdateExerciseTemplate newTemplate)
+    {
+        var template = _exerciseTemplateService.Update(id, newTemplate, FetchApiKey(HttpContext));
+        return template != null ? Ok(template) : NotFound();
     }
 
 
