@@ -7,6 +7,8 @@
 public class GroupExerciseTemplate
 {
     public int Id { get; set; }
+    public int Weight { get; set; }
+    public int Repetitions { get; set; }
     public int ExerciseId { get; set; }
     public ExerciseTemplate Exercise { get; set; } = null!;
     public int GroupId { get; set; }

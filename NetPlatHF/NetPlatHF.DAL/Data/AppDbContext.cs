@@ -15,58 +15,59 @@ public class AppDbContext : IdentityDbContext<AppUser>
     }
 
 
-    protected override void OnModelCreating(ModelBuilder builder)
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        base.OnModelCreating(builder);
-        
-        // identity user config
-        builder.ApplyConfiguration(new AppUserEntityConfiguration());
-
-
+        base.OnModelCreating(modelBuilder);
+        modelBuilder.ApplyConfiguration(new AppUserEntityConfiguration());  // identity user config
 
 
         // other config
-        builder.Entity<ExerciseTemplate>()
+        modelBuilder.Entity<ExerciseTemplate>()
+            .ToTable("exercisetemplates");
+
+        modelBuilder.Entity<ExerciseTemplate>()
             .Property(et => et.Name)
             .HasMaxLength(30)
         .IsRequired();
 
-        builder.Entity<ExerciseTemplate>()
+        modelBuilder.Entity<ExerciseTemplate>()
             .Property(et => et.Muscle)
         .HasMaxLength(30);
 
-        builder.Entity<ExerciseTemplate>()
+        modelBuilder.Entity<ExerciseTemplate>()
             .Property(et => et.Description)
             .HasMaxLength(50);
 
-        builder.Entity<ExerciseTemplate>()
+        modelBuilder.Entity<ExerciseTemplate>()
             .HasOne(t => t.Owner)
             .WithMany()
             .HasForeignKey(t => t.OwnerId)
             .IsRequired(false);
-            //.OnDelete(DeleteBehavior.Cascade);  // cascady cycle hiba
+       
+        modelBuilder.Entity<GroupTemplate>()
+            .ToTable("grouptemplates");
 
-
-        builder.Entity<GroupTemplate>()
+        modelBuilder.Entity<GroupTemplate>()
             .Property(gt => gt.Name)
             .HasMaxLength(30)
             .IsRequired();
 
-        builder.Entity<GroupTemplate>()
+        modelBuilder.Entity<GroupTemplate>()
             .Property(gt => gt.Name)
             .HasMaxLength(50)
             .IsRequired();
 
-        builder.Entity<GroupTemplate>()
+        modelBuilder.Entity<GroupTemplate>()
             .HasOne(t => t.Owner)
             .WithMany()
             .HasForeignKey(t => t.OwnerId)
             .IsRequired(false);
-            //.OnDelete(DeleteBehavior.Cascade);  // cascady cycle hiba
-
 
         // many-to-many templates
-        builder.Entity<GroupTemplate>()
+        modelBuilder.Entity<GroupExerciseTemplate>()
+            .ToTable("templates");
+
+        modelBuilder.Entity<GroupTemplate>()
             .HasMany(gt => gt.Exercises)
             .WithMany(et => et.Groups)
             .UsingEntity<GroupExerciseTemplate>(
@@ -74,18 +75,19 @@ public class AppDbContext : IdentityDbContext<AppUser>
                     .HasOne(ge => ge.Exercise)
                     .WithMany(et => et.GroupExercises)
                     .HasForeignKey(ge => ge.ExerciseId)
-                    .OnDelete(DeleteBehavior.Cascade),
+                    .OnDelete(DeleteBehavior.Cascade),  // ha torlodik egy exercise(template), akkor torlodik a hozza tartozo bejegyzes a templateben(groupexercisetemplate)
                 r => r
                     .HasOne(ge => ge.Group)
                     .WithMany(gt => gt.GroupExercises)
-                    .HasForeignKey(ge => ge.GroupId),
+                    .HasForeignKey(ge => ge.GroupId)
+                    .OnDelete(DeleteBehavior.Cascade),  // ha torlodik egy group(template), akkor torlodik a hozza tartozo bejegyzes a templateben(groupexercisetemplate)
                 j =>
                 {
                     j.HasKey(ge => ge.Id);
                 });
 
         // Alap gyakorlatok és csoportok feltöltése az adatbázisba
-        SeedTemplates(builder);
+        SeedTemplates(modelBuilder);
 
     }
 
@@ -141,14 +143,14 @@ public class AppDbContext : IdentityDbContext<AppUser>
 
 
         builder.Entity<GroupExerciseTemplate>().HasData(
-            new GroupExerciseTemplate { Id = 1, GroupId = 1, ExerciseId = 1 },
-            new GroupExerciseTemplate { Id = 2, GroupId = 1, ExerciseId = 2 },
-            new GroupExerciseTemplate { Id = 3, GroupId = 1, ExerciseId = 4 },
-            new GroupExerciseTemplate { Id = 4, GroupId = 1, ExerciseId = 6 },
+            new GroupExerciseTemplate { Id = 1, Weight = 10, Repetitions = 12,  GroupId = 1, ExerciseId = 1 },
+            new GroupExerciseTemplate { Id = 2, Weight = 5, Repetitions = 10, GroupId = 1, ExerciseId = 2 },
+            new GroupExerciseTemplate { Id = 3, Weight = 15, Repetitions = 8, GroupId = 1, ExerciseId = 4 },
+            new GroupExerciseTemplate { Id = 4, Weight = 20, Repetitions = 10, GroupId = 1, ExerciseId = 6 },
 
-            new GroupExerciseTemplate { Id = 5, GroupId = 2, ExerciseId = 7 },
-            new GroupExerciseTemplate { Id = 6, GroupId = 2, ExerciseId = 10 },
-            new GroupExerciseTemplate { Id = 7, GroupId = 2, ExerciseId = 13 },
+            new GroupExerciseTemplate { Id = 5, Weight = 30, Repetitions = 16, GroupId = 2, ExerciseId = 7 },
+            new GroupExerciseTemplate { Id = 6, Weight = 12, Repetitions = 6, GroupId = 2, ExerciseId = 10 },
+            new GroupExerciseTemplate { Id = 7, Weight = 40, Repetitions = 14, GroupId = 2, ExerciseId = 13 },
 
             new GroupExerciseTemplate { Id = 8, GroupId = 3, ExerciseId = 16 },
             new GroupExerciseTemplate { Id = 9, GroupId = 3, ExerciseId = 17 },
