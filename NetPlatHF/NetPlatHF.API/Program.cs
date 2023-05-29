@@ -53,6 +53,8 @@ builder.Services.AddScoped<ApiKeyAuthFilter>();
 
 builder.Services.AddTransient<IExerciseTemplateService, ExerciseTemplateService>();
 builder.Services.AddTransient<IGroupTemplateService, GroupTemplateService>();
+builder.Services.AddTransient<ITemplateService, TemplateService>();
+
 
 
 

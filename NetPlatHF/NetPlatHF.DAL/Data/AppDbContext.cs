@@ -67,6 +67,12 @@ public class AppDbContext : IdentityDbContext<AppUser>
         modelBuilder.Entity<GroupExerciseTemplate>()
             .ToTable("templates");
 
+        modelBuilder.Entity<GroupExerciseTemplate>()
+            .HasOne(t => t.Owner)
+            .WithMany()
+            .HasForeignKey(t => t.OwnerId)
+            .IsRequired(false);
+
         modelBuilder.Entity<GroupTemplate>()
             .HasMany(gt => gt.Exercises)
             .WithMany(et => et.Groups)
@@ -98,6 +104,7 @@ public class AppDbContext : IdentityDbContext<AppUser>
 
     public DbSet<ExerciseTemplate> ExerciseTemplates => Set<ExerciseTemplate>();
     public DbSet<GroupTemplate> GroupTemplates => Set<GroupTemplate>();
+    public DbSet<GroupExerciseTemplate> Templates => Set<GroupExerciseTemplate>();
 
 
 

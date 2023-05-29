@@ -1,4 +1,6 @@
-﻿namespace NetPlatHF.DAL.Entities;
+﻿using NetPlatHF.DAL.Data;
+
+namespace NetPlatHF.DAL.Entities;
 
 
 
@@ -13,4 +15,6 @@ public class GroupExerciseTemplate
     public ExerciseTemplate Exercise { get; set; } = null!;
     public int GroupId { get; set; }
     public GroupTemplate Group { get; set; } = null!;
+    public string? OwnerId { get; set; }  // foreign key 
+    public AppUser? Owner { get; set; }
 }
