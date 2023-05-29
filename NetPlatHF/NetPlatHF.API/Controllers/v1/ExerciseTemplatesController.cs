@@ -113,6 +113,19 @@ public class ExerciseTemplatesController : ControllerBase
 
 
 
+    [HttpDelete("{id}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ServiceFilter(typeof(ApiKeyAuthFilter))]
+    public ActionResult<BLL.Dtos.ExerciseTemplate> Delete(int id)
+    {
+        var template = _exerciseTemplateService.Delete(id, FetchApiKey(HttpContext));
+        return template != null ? NoContent() : NotFound();
+    }
+
+
+
+
     private string FetchApiKey(HttpContext httpContext)
     {
         string apiKeyName = _configuration.GetValue<string>("Auth:ApiKeyName")!;

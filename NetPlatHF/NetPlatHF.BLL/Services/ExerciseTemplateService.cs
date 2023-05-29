@@ -101,7 +101,14 @@ public class ExerciseTemplateService : IExerciseTemplateService
 
     public Dtos.ExerciseTemplate? Delete(int id, string userApiKey)
     {
-        throw new NotImplementedException();
+        var template = GetUserTemplate(id, userApiKey);
+        if (template == null)
+            return null;
+
+        _ctx.ExerciseTemplates.Remove(template);
+        _ctx.SaveChanges();
+
+        return ToModel(template);
     }
 
 
