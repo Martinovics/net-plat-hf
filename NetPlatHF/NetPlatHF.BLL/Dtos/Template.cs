@@ -4,6 +4,7 @@
 
 
 public record Template(
+    int Id,
     int ExerciseId,
     string ErciseName,
     string ExerciseMuscle,
