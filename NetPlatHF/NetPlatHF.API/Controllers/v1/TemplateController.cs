@@ -89,6 +89,20 @@ public class TemplateController : ControllerBase
 
 
 
+    [MapToApiVersion("1.0")]
+    [HttpDelete("{id}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ServiceFilter(typeof(ApiKeyAuthFilter))]
+    public ActionResult<BLL.Dtos.Template> Delete(int id)
+    {
+        var template = _templateService.Delete(id, FetchApiKey(HttpContext));
+        return template != null ? NoContent() : NotFound();
+    }
+
+
+
+
     private string FetchApiKey(HttpContext httpContext)  // TODO make it static | extract
     {
         string apiKeyName = _configuration.GetValue<string>("Auth:ApiKeyName")!;

@@ -94,9 +94,26 @@ public class TemplateService : ITemplateService
 
 
 
-    public Template? Delete(int id)
+    public Template? Delete(int id, string userApiKey)
     {
-        throw new NotImplementedException();
+        var owner = GetUser(userApiKey);
+        if (owner == null)
+            return null;
+
+        var template = _ctx.Templates
+            .Include(x => x.Owner)
+            .Include(x => x.Group)
+            .Include(x => x.Exercise)
+            .Where(x => x.OwnerId == owner.Id && x.Id == id)
+            .SingleOrDefault();
+
+        if (template == null)
+            return null;
+
+        _ctx.Templates.Remove(template);
+        _ctx.SaveChanges();
+
+        return ToModel(template.Id, template.Group, template.Exercise, template.Weight, template.Repetitions);
     }
     
 

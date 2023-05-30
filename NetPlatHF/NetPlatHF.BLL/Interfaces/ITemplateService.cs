@@ -12,5 +12,5 @@ public interface ITemplateService
     public Dtos.Template GetById(int id, string? userApiKey);
     public Dtos.Template Create(int groupId, int exerciseId, CreateTemplate createTemplate, string userApiKey);
     public Dtos.Template? Update();
-    public Dtos.Template? Delete(int id);
+    public Dtos.Template? Delete(int id, string userApiKey);
 }
