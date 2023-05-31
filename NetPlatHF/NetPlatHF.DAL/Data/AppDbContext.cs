@@ -44,6 +44,7 @@ public class AppDbContext : IdentityDbContext<AppUser>
             .HasForeignKey(t => t.OwnerId)
             .IsRequired(false);
        
+
         modelBuilder.Entity<GroupTemplate>()
             .ToTable("grouptemplates");
 
@@ -63,7 +64,19 @@ public class AppDbContext : IdentityDbContext<AppUser>
             .HasForeignKey(t => t.OwnerId)
             .IsRequired(false);
 
-        // many-to-many templates
+
+        modelBuilder.Entity<Workout>()
+            .ToTable("workouts");
+        
+        modelBuilder.Entity<Workout>()
+            .HasKey(w => w.Name);
+
+        modelBuilder.Entity<Workout>()
+            .HasMany(w => w.Groups)
+            .WithMany();
+
+
+        // many-to-many templates  // TODO fel kell venni a workout-group kapcsolatot is
         modelBuilder.Entity<GroupExerciseTemplate>()
             .ToTable("templates");
 
@@ -105,6 +118,7 @@ public class AppDbContext : IdentityDbContext<AppUser>
     public DbSet<ExerciseTemplate> ExerciseTemplates => Set<ExerciseTemplate>();
     public DbSet<GroupTemplate> GroupTemplates => Set<GroupTemplate>();
     public DbSet<GroupExerciseTemplate> Templates => Set<GroupExerciseTemplate>();
+    public DbSet<Workout> Workouts => Set<Workout>();
 
 
 
