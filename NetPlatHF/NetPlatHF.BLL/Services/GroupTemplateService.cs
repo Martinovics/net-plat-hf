@@ -68,7 +68,7 @@ public class GroupTemplateService : IGroupTemplateService
         GroupTemplate? template;
         if (apiKey.IsNullOrEmpty())
         {
-            template = _ctx.GroupTemplates.Include(x => x.Owner).Where(x => x.Id == id && x.Owner == null).SingleOrDefault();
+            template = _ctx.GroupTemplates.Include(x => x.Owner).Include(x => x.Exercises).Where(x => x.Id == id && x.Owner == null).SingleOrDefault();
         }
         else
         {
@@ -126,14 +126,19 @@ public class GroupTemplateService : IGroupTemplateService
             return null;
 
         var ownerID = owner.Id;
-        return _ctx.GroupTemplates.Where(x => x.Id == id && x.OwnerId == ownerID).SingleOrDefault();
+        return _ctx.GroupTemplates.Include(x => x.Exercises).Where(x => x.Id == id && x.OwnerId == ownerID).SingleOrDefault();
     }
+
 
 
 
     private Dtos.GroupTemplate ToModel(GroupTemplate groupTemplate)
     {
-        return new Dtos.GroupTemplate(groupTemplate.Id, groupTemplate.Name, groupTemplate.Description);
+        var exercises = new List<string>();
+        foreach (var exercise in groupTemplate.Exercises)
+            exercises.Add(exercise.Name);
+
+        return new Dtos.GroupTemplate(groupTemplate.Id, groupTemplate.Name, groupTemplate.Description, 0 < exercises.Count ? exercises : null);
     }
 
 

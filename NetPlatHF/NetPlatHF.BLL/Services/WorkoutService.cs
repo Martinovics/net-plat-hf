@@ -46,7 +46,7 @@ public class WorkoutService : IWorkoutService
         DAL.Entities.Workout? workout;
         if (userApiKey.IsNullOrEmpty())
         {
-            workout = _ctx.Workouts.Include(x => x.Owner).Where(x => x.Owner == null && x.Name == name).SingleOrDefault();
+            workout = _ctx.Workouts.Include(x => x.Owner).Include(x => x.Groups).Where(x => x.Owner == null && x.Name == name).SingleOrDefault();
         }
         else
         {
@@ -173,7 +173,7 @@ public class WorkoutService : IWorkoutService
         if (owner == null)
             return null;
 
-        return _ctx.Workouts.Include(x => x.Owner).Where(x => x.Name == name && x.OwnerId == owner.Id).SingleOrDefault();
+        return _ctx.Workouts.Include(x => x.Owner).Include(x => x.Groups).Where(x => x.Name == name && x.OwnerId == owner.Id).SingleOrDefault();
     }
 
 
