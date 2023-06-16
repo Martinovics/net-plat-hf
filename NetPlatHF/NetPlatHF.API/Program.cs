@@ -10,6 +10,7 @@ using NetPlatHF.DAL.Data;
 using NetPlatHF.BLL.Interfaces;
 using NetPlatHF.BLL.Services;
 using NetPlatHF.BLL.QueryParamResolvers;
+using NetPlatHF.BLL.Classes;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -63,11 +64,14 @@ builder.Services.AddTransient<IGroupTemplateService, GroupTemplateService>();
 builder.Services.AddTransient<ITemplateService, TemplateService>();
 builder.Services.AddTransient<IWorkoutService, WorkoutService>();
 
-
+builder.Services.AddHealthChecks()
+    .AddDbContextCheck<AppDbContext>()
+    .AddCheck<DbHealthCheck>("Db Health Check");
 
 
 var app = builder.Build();
 
+app.MapHealthChecks("/health");
 
 
 
