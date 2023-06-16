@@ -21,12 +21,19 @@ builder.Services.AddEndpointsApiExplorer();
 
 
 builder.Services.AddAutoMapper(typeof(AutoMapperProfile));  // a dto-hoz kell
-/*builder.Services.AddDbContext<AppDbContext>(
-    options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
-);*/
+
 builder.Services.AddDbContext<AppDbContext>(
-    options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"),
-    b => b.MigrationsAssembly("NetPlatHF.DAL"))
+    options => options
+        .UseSqlServer(
+            builder.Configuration.GetConnectionString("DefaultConnection"),
+            opt => opt
+                .MigrationsAssembly("NetPlatHF.DAL")
+                .EnableRetryOnFailure(
+                    maxRetryCount: 4,
+                    maxRetryDelay: TimeSpan.FromSeconds(10),
+                    errorNumbersToAdd: null  // alapertelmezett tranziens hibak 
+                )
+        )
 );
 builder.Services.AddDefaultIdentity<AppUser>(options => options.SignIn.RequireConfirmedAccount = false).AddEntityFrameworkStores<AppDbContext>();
 
