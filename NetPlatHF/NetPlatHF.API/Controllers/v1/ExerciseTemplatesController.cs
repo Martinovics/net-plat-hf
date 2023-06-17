@@ -19,7 +19,6 @@ namespace NetPlatHF.API.Controllers.v1;
 [ApiController]
 [Route("api/v{version:apiVersion}/exercise/templates")]
 [ApiVersion("1.0")]
-[ApiVersion("2.0")]
 public class ExerciseTemplatesController : ControllerBase
 {
     private readonly IExerciseTemplateService _exerciseTemplateService;
@@ -35,8 +34,8 @@ public class ExerciseTemplatesController : ControllerBase
 
 
 
-    [MapToApiVersion("1.0")]
     [HttpGet]
+    [MapToApiVersion("1.0")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public IEnumerable<BLL.Dtos.ExerciseTemplate> List()
     {
@@ -46,8 +45,8 @@ public class ExerciseTemplatesController : ControllerBase
 
 
 
-    [MapToApiVersion("1.0")]
     [HttpGet("self")]
+    [MapToApiVersion("1.0")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ServiceFilter(typeof(ApiKeyAuthFilter))]
     public IEnumerable<BLL.Dtos.ExerciseTemplate> ListSelf()
@@ -59,8 +58,8 @@ public class ExerciseTemplatesController : ControllerBase
 
 
 
-    [MapToApiVersion("1.0")]
     [HttpGet("{id}")]
+    [MapToApiVersion("1.0")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public ActionResult<BLL.Dtos.ExerciseTemplate> Get(int id)
@@ -80,6 +79,7 @@ public class ExerciseTemplatesController : ControllerBase
 
 
     [HttpPost]
+    [MapToApiVersion("1.0")]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ServiceFilter(typeof(ApiKeyAuthFilter))]
@@ -101,6 +101,7 @@ public class ExerciseTemplatesController : ControllerBase
 
 
     [HttpPatch("{id}")]
+    [MapToApiVersion("1.0")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ServiceFilter(typeof(ApiKeyAuthFilter))]
@@ -114,6 +115,7 @@ public class ExerciseTemplatesController : ControllerBase
 
 
     [HttpDelete("{id}")]
+    [MapToApiVersion("1.0")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ServiceFilter(typeof(ApiKeyAuthFilter))]

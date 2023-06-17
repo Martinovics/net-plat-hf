@@ -16,7 +16,6 @@ namespace NetPlatHF.API.Controllers.v1;
 [Route("api/v{version:apiVersion}/template")]
 [ApiController]
 [ApiVersion("1.0")]
-[ApiVersion("2.0")]
 public class TemplateController : ControllerBase
 {
     private readonly ITemplateService _templateService;
@@ -32,8 +31,8 @@ public class TemplateController : ControllerBase
 
 
 
-    [MapToApiVersion("1.0")]
     [HttpGet]
+    [MapToApiVersion("1.0")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public IEnumerable<BLL.Dtos.Template> List()
     {
@@ -43,8 +42,8 @@ public class TemplateController : ControllerBase
 
 
 
-    [MapToApiVersion("1.0")]
     [HttpGet("self")]
+    [MapToApiVersion("1.0")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ServiceFilter(typeof(ApiKeyAuthFilter))]
     public IEnumerable<BLL.Dtos.Template> ListSelf()
@@ -55,8 +54,8 @@ public class TemplateController : ControllerBase
 
 
 
-    [MapToApiVersion("1.0")]
     [HttpGet("{id}")]
+    [MapToApiVersion("1.0")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ServiceFilter(typeof(ApiKeyAuthFilter))]
     public IEnumerable<BLL.Dtos.Template> Get(int id)
@@ -67,8 +66,8 @@ public class TemplateController : ControllerBase
 
 
 
-    [MapToApiVersion("1.0")]
     [HttpPost("group/{groupId}/exercise/{exerciseId}")]
+    [MapToApiVersion("1.0")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ServiceFilter(typeof(ApiKeyAuthFilter))]
@@ -89,8 +88,8 @@ public class TemplateController : ControllerBase
 
 
 
-    [MapToApiVersion("1.0")]
     [HttpDelete("{id}")]
+    [MapToApiVersion("1.0")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ServiceFilter(typeof(ApiKeyAuthFilter))]

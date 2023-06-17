@@ -1,11 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using NetPlatHF.BLL.Dtos;
 using NetPlatHF.BLL.Interfaces;
-using NetPlatHF.BLL.QueryParamResolvers;
 using NetPlatHF.DAL.Data;
 using NetPlatHF.DAL.Entities;
 using System.Data;
-using System.Diagnostics;
 
 namespace NetPlatHF.BLL.Services;
 
@@ -43,10 +42,8 @@ public class GroupTemplateService : IGroupTemplateService
 
     public Dtos.GroupTemplate Insert(Dtos.CreateGroupTemplate newTemplate, string userApiKey)
     {
-        var transaction = _ctx.Database.BeginTransaction(IsolationLevel.RepeatableRead);
-
         var owner = GetOwner(userApiKey);
-        var template = new GroupTemplate(newTemplate.Name)
+        var template = new DAL.Entities.GroupTemplate(newTemplate.Name)
         {
             Description = newTemplate?.Description ?? "",
             Owner = owner
@@ -55,9 +52,38 @@ public class GroupTemplateService : IGroupTemplateService
 
         _ctx.GroupTemplates.Add(template);
         _ctx.SaveChanges();
-        transaction.Commit();
 
         return ToModel(template);
+    }
+
+
+
+    public Dtos.GroupTemplate InsertGroupBulkedExercises(CreateGroupBulkedExercise newGroup, string userApiKey)
+    {
+
+        var owner = GetOwner(userApiKey);
+        var group = new DAL.Entities.GroupTemplate(newGroup.Group.Name)
+        {
+            Description = newGroup.Group.Description ?? "",
+            Owner = owner
+        };
+
+        foreach (var newExercise in newGroup.Exercises)
+        {
+            var exercise = new DAL.Entities.ExerciseTemplate(newExercise.Name)
+            {
+                Muscle = newExercise?.Muscle ?? "",
+                Description = newExercise?.Description ?? "",
+                Owner = owner
+            };
+            group.Exercises.Add(exercise);
+        }
+
+
+        _ctx.GroupTemplates.Add(group);
+        _ctx.SaveChanges();
+
+        return ToModel(group);
     }
 
 
@@ -65,7 +91,7 @@ public class GroupTemplateService : IGroupTemplateService
 
     public Dtos.GroupTemplate? GetTemplateById(int id, string? apiKey)
     {
-        GroupTemplate? template;
+        DAL.Entities.GroupTemplate? template;
         if (apiKey.IsNullOrEmpty())
         {
             template = _ctx.GroupTemplates.Include(x => x.Owner).Include(x => x.Exercises).Where(x => x.Id == id && x.Owner == null).SingleOrDefault();
@@ -119,7 +145,7 @@ public class GroupTemplateService : IGroupTemplateService
 
 
 
-    private GroupTemplate? GetUserTemplate(int id, string apiKey)
+    private DAL.Entities.GroupTemplate? GetUserTemplate(int id, string apiKey)
     {
         var owner = GetOwner(apiKey);
         if (owner == null)
@@ -132,7 +158,7 @@ public class GroupTemplateService : IGroupTemplateService
 
 
 
-    private Dtos.GroupTemplate ToModel(GroupTemplate groupTemplate)
+    private Dtos.GroupTemplate ToModel(DAL.Entities.GroupTemplate groupTemplate)
     {
         var exercises = new List<string>();
         foreach (var exercise in groupTemplate.Exercises)

@@ -10,7 +10,6 @@ namespace NetPlatHF.API.Controllers.v2;
 
 [ApiController]
 [Route("api/v{version:apiVersion}/exercise/templates")]
-[ApiVersion("1.0")]
 [ApiVersion("2.0")]
 public class ExerciseTemplatesController : ControllerBase
 {

@@ -12,7 +12,6 @@ namespace NetPlatHF.API.Controllers.v1;
 [ApiController]
 [Route("api/v{version:apiVersion}/group/templates")]
 [ApiVersion("1.0")]
-[ApiVersion("2.0")]
 public class GroupTemplatesController : ControllerBase
 {
     private readonly IGroupTemplateService _groupTemplateService;
@@ -28,8 +27,8 @@ public class GroupTemplatesController : ControllerBase
 
 
 
-    [MapToApiVersion("1.0")]
     [HttpGet]
+    [MapToApiVersion("1.0")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public IEnumerable<BLL.Dtos.GroupTemplate> List()
     {
@@ -39,8 +38,8 @@ public class GroupTemplatesController : ControllerBase
 
 
 
-    [MapToApiVersion("1.0")]
     [HttpGet("self")]
+    [MapToApiVersion("1.0")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ServiceFilter(typeof(ApiKeyAuthFilter))]
     public IEnumerable<BLL.Dtos.GroupTemplate> ListSelf()
@@ -52,8 +51,8 @@ public class GroupTemplatesController : ControllerBase
 
 
 
-    [MapToApiVersion("1.0")]
     [HttpGet("{id}")]
+    [MapToApiVersion("1.0")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public ActionResult<BLL.Dtos.GroupTemplate> Get(int id)
@@ -73,6 +72,7 @@ public class GroupTemplatesController : ControllerBase
 
 
     [HttpPost]
+    [MapToApiVersion("1.0")]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ServiceFilter(typeof(ApiKeyAuthFilter))]
@@ -94,6 +94,7 @@ public class GroupTemplatesController : ControllerBase
 
 
     [HttpPatch("{id}")]
+    [MapToApiVersion("1.0")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ServiceFilter(typeof(ApiKeyAuthFilter))]
@@ -107,6 +108,7 @@ public class GroupTemplatesController : ControllerBase
 
 
     [HttpDelete("{id}")]
+    [MapToApiVersion("1.0")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ServiceFilter(typeof(ApiKeyAuthFilter))]

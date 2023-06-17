@@ -14,7 +14,6 @@ namespace NetPlatHF.API.Controllers.v1;
 [ApiController]
 [Route("api/v{version:apiVersion}/workout")]
 [ApiVersion("1.0")]
-[ApiVersion("2.0")]
 public class WorkoutsController : ControllerBase
 {
     private readonly IWorkoutService _workoutService;
@@ -30,8 +29,8 @@ public class WorkoutsController : ControllerBase
 
 
 
-    [MapToApiVersion("1.0")]
     [HttpGet]
+    [MapToApiVersion("1.0")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public IEnumerable<BLL.Dtos.Workout> List()
     {
@@ -41,8 +40,8 @@ public class WorkoutsController : ControllerBase
 
 
 
-    [MapToApiVersion("1.0")]
     [HttpGet("self")]
+    [MapToApiVersion("1.0")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ServiceFilter(typeof(ApiKeyAuthFilter))]
     public IEnumerable<BLL.Dtos.Workout> ListSelf()
@@ -54,8 +53,8 @@ public class WorkoutsController : ControllerBase
 
 
 
-    [MapToApiVersion("1.0")]
     [HttpGet("{name}")]
+    [MapToApiVersion("1.0")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public ActionResult<BLL.Dtos.Workout> Get(string name)
@@ -74,8 +73,8 @@ public class WorkoutsController : ControllerBase
 
 
 
-    [MapToApiVersion("1.0")]
     [HttpPost("{name}")]
+    [MapToApiVersion("1.0")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ServiceFilter(typeof(ApiKeyAuthFilter))]
@@ -96,8 +95,8 @@ public class WorkoutsController : ControllerBase
 
 
 
-    [MapToApiVersion("1.0")]
     [HttpPost("{name}/group/{groupId}")]
+    [MapToApiVersion("1.0")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ServiceFilter(typeof(ApiKeyAuthFilter))]
@@ -110,8 +109,8 @@ public class WorkoutsController : ControllerBase
 
 
 
-    [MapToApiVersion("1.0")]
     [HttpDelete("{name}/group/{groupId}")]
+    [MapToApiVersion("1.0")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ServiceFilter(typeof(ApiKeyAuthFilter))]
@@ -124,8 +123,8 @@ public class WorkoutsController : ControllerBase
 
 
 
-    [MapToApiVersion("1.0")]
     [HttpDelete("{name}")]
+    [MapToApiVersion("1.0")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ServiceFilter(typeof(ApiKeyAuthFilter))]
@@ -134,6 +133,7 @@ public class WorkoutsController : ControllerBase
         var workout = _workoutService.Delete(name, FetchApiKey(HttpContext));
         return workout != null ? NoContent() : NotFound();
     }
+
 
 
 
