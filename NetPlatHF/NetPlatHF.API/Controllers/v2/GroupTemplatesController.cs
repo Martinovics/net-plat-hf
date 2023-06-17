@@ -25,6 +25,15 @@ public class GroupTemplatesController : ControllerBase
     }
 
 
+
+
+    /// <summary>
+    /// Letrehoz egy csoportot es hozzaadja a megadott gyakorlatokat is
+    /// </summary>
+    /// <param name="newGroup">Letrehozando csoport es gyakorlatok</param>
+    /// <returns>Letrehozott csoport es gyakorlatok</returns>
+    /// <response code="200">Sikeres letrehozas</response>
+    /// <response code="404">Sikertelen letrehozas</response>
     [HttpPost]
     [MapToApiVersion("2.0")]
     [ProducesResponseType(StatusCodes.Status201Created)]

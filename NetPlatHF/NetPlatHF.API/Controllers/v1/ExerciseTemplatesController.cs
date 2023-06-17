@@ -1,14 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using NetPlatHF.API.Authentication;
-using NetPlatHF.BLL.Exceptions;
 using NetPlatHF.BLL.Interfaces;
-using NetPlatHF.BLL.QueryParamResolvers;
-using NetPlatHF.BLL.Services;
-using NetPlatHF.DAL.Entities;
-using System.Net.Http.Headers;
 using NetPlatHF.BLL.Dtos;
-using Newtonsoft.Json.Linq;
 
 
 namespace NetPlatHF.API.Controllers.v1;
@@ -34,6 +27,11 @@ public class ExerciseTemplatesController : ControllerBase
 
 
 
+    /// <summary>
+    /// Visszaadja a publikusan elerheto gyakorlatok listajat.
+    /// </summary>
+    /// <returns>Publikus gyakorlatok listaja</returns>
+    /// <response code="200">Sikeres listazas</response>
     [HttpGet]
     [MapToApiVersion("1.0")]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -45,6 +43,11 @@ public class ExerciseTemplatesController : ControllerBase
 
 
 
+    /// <summary>
+    /// Kilistazza a felhasznalo gyakorlatait
+    /// </summary>
+    /// <returns>A felhasznalohoz tartozo gyakorlatok listaja</returns>
+    /// <response code="200">Sikeres listazas</response>
     [HttpGet("self")]
     [MapToApiVersion("1.0")]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -58,6 +61,13 @@ public class ExerciseTemplatesController : ControllerBase
 
 
 
+    /// <summary>
+    /// Visszadja a felhasznalohoz tartozo gyakorlatot azonosito alapjan
+    /// </summary>
+    /// <param name="id">A gyakorlat azonositoja</param>
+    /// <returns>Gyakorlat</returns>
+    /// <response code="200">A gyakorlat megtalalva</response>
+    /// <response code="404">A gyakorlat nem talalhato</response>
     [HttpGet("{id}")]
     [MapToApiVersion("1.0")]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -78,6 +88,13 @@ public class ExerciseTemplatesController : ControllerBase
 
 
 
+    /// <summary>
+    /// Letrehoz egy gyakorlatot
+    /// </summary>
+    /// <param name="newTemplate">Letrehozando gyakorlat</param>
+    /// <returns>Letrehozott gyakorlat</returns>
+    /// <response code="200">Sikeres letrehozas</response>
+    /// <response code="404">Sikertelen letrehozas</response>
     [HttpPost]
     [MapToApiVersion("1.0")]
     [ProducesResponseType(StatusCodes.Status201Created)]
@@ -100,6 +117,14 @@ public class ExerciseTemplatesController : ControllerBase
 
 
 
+    /// <summary>
+    /// Frissit egy gyakorlatot
+    /// </summary>
+    /// <param name="id">Frissitendo gyakorlat azonositoja</param>
+    /// <param name="newTemplate">Uj adatok, amire frissul a gyakorlat</param>
+    /// <returns>Frissitett gyakorlat</returns>
+    /// <response code="200">Sikeres frissites</response>
+    /// <response code="404">Sikertelen frissites</response>
     [HttpPatch("{id}")]
     [MapToApiVersion("1.0")]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -114,6 +139,13 @@ public class ExerciseTemplatesController : ControllerBase
 
 
 
+    /// <summary>
+    /// Torol egy gyakorlatot
+    /// </summary>
+    /// <param name="id">Torlendo gyakorlat azonositoja</param>
+    /// <returns>No content</returns>
+    /// <response code="200">Sikeres torles</response>
+    /// <response code="404">Sikertelen torles</response>
     [HttpDelete("{id}")]
     [MapToApiVersion("1.0")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]

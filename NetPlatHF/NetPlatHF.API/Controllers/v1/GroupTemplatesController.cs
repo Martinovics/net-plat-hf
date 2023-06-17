@@ -27,6 +27,11 @@ public class GroupTemplatesController : ControllerBase
 
 
 
+    /// <summary>
+    /// Visszaadja a publikusan elerheto csoportok listajat.
+    /// </summary>
+    /// <returns>Publikus csoportok listaja</returns>
+    /// <response code="200">Sikeres listazas</response>
     [HttpGet]
     [MapToApiVersion("1.0")]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -38,6 +43,11 @@ public class GroupTemplatesController : ControllerBase
 
 
 
+    /// <summary>
+    /// Kilistazza a felhasznalo csoportjait
+    /// </summary>
+    /// <returns>A felhasznalohoz tartozo csoportok listaja</returns>
+    /// <response code="200">Sikeres listazas</response>
     [HttpGet("self")]
     [MapToApiVersion("1.0")]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -51,6 +61,13 @@ public class GroupTemplatesController : ControllerBase
 
 
 
+    /// <summary>
+    /// Visszadja a felhasznalohoz tartozo csoportot azonosito alapjan
+    /// </summary>
+    /// <param name="id">A csoport azonositoja</param>
+    /// <returns>Gyakorlat</returns>
+    /// <response code="200">A csoport megtalalva</response>
+    /// <response code="404">A csoport nem talalhato</response>
     [HttpGet("{id}")]
     [MapToApiVersion("1.0")]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -71,6 +88,13 @@ public class GroupTemplatesController : ControllerBase
 
 
 
+    /// <summary>
+    /// Letrehoz egy csoportot
+    /// </summary>
+    /// <param name="newTemplate">Letrehozando csoport</param>
+    /// <returns>Letrehozott csoport</returns>
+    /// <response code="200">Sikeres letrehozas</response>
+    /// <response code="404">Sikertelen letrehozas</response>
     [HttpPost]
     [MapToApiVersion("1.0")]
     [ProducesResponseType(StatusCodes.Status201Created)]
@@ -93,6 +117,14 @@ public class GroupTemplatesController : ControllerBase
 
 
 
+    /// <summary>
+    /// Frissit egy csoportot
+    /// </summary>
+    /// <param name="id">Frissitendo csoport azonositoja</param>
+    /// <param name="newTemplate">Uj adatok, amire frissul a csoport</param>
+    /// <returns>Frissitett csoport</returns>
+    /// <response code="200">Sikeres frissites</response>
+    /// <response code="404">Sikertelen frissites</response>
     [HttpPatch("{id}")]
     [MapToApiVersion("1.0")]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -107,6 +139,13 @@ public class GroupTemplatesController : ControllerBase
 
 
 
+    /// <summary>
+    /// Torol egy csoportot
+    /// </summary>
+    /// <param name="id">Torlendo csoport azonositoja</param>
+    /// <returns>No content</returns>
+    /// <response code="200">Sikeres torles</response>
+    /// <response code="404">Sikertelen torles</response>
     [HttpDelete("{id}")]
     [MapToApiVersion("1.0")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]

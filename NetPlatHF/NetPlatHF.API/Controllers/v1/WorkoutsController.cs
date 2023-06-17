@@ -1,10 +1,9 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using NetPlatHF.API.Authentication;
 using NetPlatHF.BLL.Dtos;
 using NetPlatHF.BLL.Exceptions;
 using NetPlatHF.BLL.Interfaces;
-using NetPlatHF.BLL.Services;
+
 
 namespace NetPlatHF.API.Controllers.v1;
 
@@ -29,6 +28,11 @@ public class WorkoutsController : ControllerBase
 
 
 
+    /// <summary>
+    /// Kilistazza a publikusan elerheto edzeseket
+    /// </summary>
+    /// <returns>Publikus gyakorlatok listaja</returns>
+    /// <response code="200">Sikeres listazas</response>
     [HttpGet]
     [MapToApiVersion("1.0")]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -40,6 +44,11 @@ public class WorkoutsController : ControllerBase
 
 
 
+    /// <summary>
+    /// Kilistazza a felhasznalohoz tartozo edzeseket
+    /// </summary>
+    /// <returns>Gyakorlatok listaja</returns>
+    /// <response code="200">Sikeres listazas</response>
     [HttpGet("self")]
     [MapToApiVersion("1.0")]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -53,6 +62,13 @@ public class WorkoutsController : ControllerBase
 
 
 
+    /// <summary>
+    /// Visszaad egy edzest a neve alapjan
+    /// </summary>
+    /// <param name="name">Edzes neve</param>
+    /// <returns>Edzes</returns>
+    /// <response code="200">Edzes megtalalva</response>
+    /// <response code="404">Edzes nem talalhato</response>
     [HttpGet("{name}")]
     [MapToApiVersion("1.0")]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -73,10 +89,17 @@ public class WorkoutsController : ControllerBase
 
 
 
+    /// <summary>
+    /// Letrehoz egy edzest
+    /// </summary>
+    /// <param name="name">Edzes neve</param>
+    /// <returns>Letrejott edzes</returns>
+    /// <response code="201">Edzes letrejott</response>
+    /// <response code="400">Edzes nem jott letre</response>
     [HttpPost("{name}")]
     [MapToApiVersion("1.0")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ServiceFilter(typeof(ApiKeyAuthFilter))]
     public ActionResult<BLL.Dtos.Template> Create(string name)
     {
@@ -95,6 +118,14 @@ public class WorkoutsController : ControllerBase
 
 
 
+    /// <summary>
+    /// Hozzaad egy csoportot az edzeshez
+    /// </summary>
+    /// <param name="name">Edzes neve</param>
+    /// <param name="groupId">Csoport azonositoja</param>
+    /// <returns>Ok</returns>
+    /// <response code="200">A csoport hozzaadodott az edzeshez</response>
+    /// <response code="404">A csoport nem adodott hozza az edzeshez</response>
     [HttpPost("{name}/group/{groupId}")]
     [MapToApiVersion("1.0")]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -109,6 +140,14 @@ public class WorkoutsController : ControllerBase
 
 
 
+    /// <summary>
+    /// Torol egy csoportot az edzesbol
+    /// </summary>
+    /// <param name="name">Edzes neve</param>
+    /// <param name="groupId">Csoport azonositoja</param>
+    /// <returns>Ok</returns>
+    /// <response code="200">A csoport torlodott az edzesbol</response>
+    /// <response code="404">A csoport nem torlodott az edzesbol</response>
     [HttpDelete("{name}/group/{groupId}")]
     [MapToApiVersion("1.0")]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -123,6 +162,13 @@ public class WorkoutsController : ControllerBase
 
 
 
+    /// <summary>
+    /// Torol egy edzest
+    /// </summary>
+    /// <param name="name">Torlendo edzes neve</param>
+    /// <returns>Ok</returns>
+    /// <response code="200">Az edzes torlodott</response>
+    /// <response code="404">Az edzes nem torlodott</response>
     [HttpDelete("{name}")]
     [MapToApiVersion("1.0")]
     [ProducesResponseType(StatusCodes.Status200OK)]
