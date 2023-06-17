@@ -43,8 +43,6 @@ public class ExerciseTemplateService : IExerciseTemplateService
 
     public Dtos.ExerciseTemplate Insert(Dtos.CreateExerciseTemplate newTemplate, string userApiKey)
     {
-        var transaction = _ctx.Database.BeginTransaction(IsolationLevel.RepeatableRead);
-        
         var owner = GetOwner(userApiKey);
         var template = new ExerciseTemplate(newTemplate.Name)
         {
@@ -56,7 +54,6 @@ public class ExerciseTemplateService : IExerciseTemplateService
 
         _ctx.ExerciseTemplates.Add(template);
         _ctx.SaveChanges();
-        transaction.Commit();
         
         return ToModel(template);
     }

@@ -61,8 +61,6 @@ public class WorkoutService : IWorkoutService
 
     public Workout Create(CreateWorkout createWorkout, string userApiKey)
     {
-        var transaction = _ctx.Database.BeginTransaction(IsolationLevel.RepeatableRead);
-
         var owner = GetUser(userApiKey) ?? throw new InvalidOwnerException("Invalid owner");
         
         if (_ctx.Workouts.Any(x => x.Name == createWorkout.Name && x.OwnerId == owner.Id))
@@ -77,7 +75,6 @@ public class WorkoutService : IWorkoutService
 
         _ctx.Workouts.Add(workout);
         _ctx.SaveChanges();
-        transaction.Commit();
 
         _ctx.Workouts.Include(x => x.Groups);
         return ToModel(workout);

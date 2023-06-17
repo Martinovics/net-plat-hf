@@ -32,7 +32,7 @@ builder.Services.AddDbContext<AppDbContext>(
                 .EnableRetryOnFailure(
                     maxRetryCount: 4,
                     maxRetryDelay: TimeSpan.FromSeconds(10),
-                    errorNumbersToAdd: null  // alapertelmezett tranziens hibak 
+                    errorNumbersToAdd: Array.Empty<int>()  // alapertelmezett tranziens hibak 
                 )
         )
 );
