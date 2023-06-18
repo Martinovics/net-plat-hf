@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper;
+using AutoMapper.QueryableExtensions;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using NetPlatHF.BLL.Interfaces;
 using NetPlatHF.BLL.QueryParamResolvers;
@@ -15,11 +17,13 @@ namespace NetPlatHF.BLL.Services;
 public class ExerciseTemplateService : IExerciseTemplateService
 {
     private readonly AppDbContext _ctx;
+    private readonly IMapper _mapper;
 
 
-    public ExerciseTemplateService(AppDbContext context)
+    public ExerciseTemplateService(AppDbContext context, IMapper mapper)
     {
         _ctx = context;
+        _mapper = mapper;
     }
 
 
@@ -27,7 +31,11 @@ public class ExerciseTemplateService : IExerciseTemplateService
 
     public IReadOnlyCollection<Dtos.ExerciseTemplate> ListTemplates()
     {
-        return _ctx.ExerciseTemplates.Include(x => x.Owner).Where(x => x.OwnerId == null).Select(ToModel).ToList();
+        return _ctx.ExerciseTemplates
+            .Include(x => x.Owner)
+            .Where(x => x.OwnerId == null)
+            .ProjectTo<Dtos.ExerciseTemplate>(_mapper.ConfigurationProvider)
+            .ToList();
     }
 
 
@@ -35,7 +43,11 @@ public class ExerciseTemplateService : IExerciseTemplateService
 
     public IReadOnlyCollection<Dtos.ExerciseTemplate> ListUserTemplates(string userApiKey)
     {
-        return _ctx.ExerciseTemplates.Include(x => x.Owner).Where(x => x.Owner!.ApiKey == userApiKey).Select(ToModel).ToList();
+        return _ctx.ExerciseTemplates
+            .Include(x => x.Owner)
+            .Where(x => x.Owner!.ApiKey == userApiKey)
+            .ProjectTo<Dtos.ExerciseTemplate>(_mapper.ConfigurationProvider)
+            .ToList();
     }
 
 
@@ -54,8 +66,8 @@ public class ExerciseTemplateService : IExerciseTemplateService
 
         _ctx.ExerciseTemplates.Add(template);
         _ctx.SaveChanges();
-        
-        return ToModel(template);
+
+        return _mapper.Map<Dtos.ExerciseTemplate>(template);
     }
 
 
@@ -73,7 +85,7 @@ public class ExerciseTemplateService : IExerciseTemplateService
             template = GetUserTemplate(id, apiKey);
         }
 
-        return template == null ? null : ToModel(template);
+        return template == null ? null : _mapper.Map<Dtos.ExerciseTemplate>(template);
     }
 
 
@@ -90,7 +102,7 @@ public class ExerciseTemplateService : IExerciseTemplateService
         template.Description = newTemplate?.Description ?? template.Description;
 
         _ctx.SaveChanges();  // TODO ha nem sikerul frissiteni pl a name hossza miatt akkor dobhat hibat
-        return ToModel(template);
+        return _mapper.Map<Dtos.ExerciseTemplate>(template);
     }
 
 
@@ -105,7 +117,7 @@ public class ExerciseTemplateService : IExerciseTemplateService
         _ctx.ExerciseTemplates.Remove(template);
         _ctx.SaveChanges();
 
-        return ToModel(template);
+        return _mapper.Map<Dtos.ExerciseTemplate>(template);
     }
 
 
@@ -118,6 +130,7 @@ public class ExerciseTemplateService : IExerciseTemplateService
 
 
 
+
     private ExerciseTemplate? GetUserTemplate(int id, string apiKey)
     {
         var owner = GetOwner(apiKey);
@@ -126,43 +139,5 @@ public class ExerciseTemplateService : IExerciseTemplateService
 
         var ownerID = owner.Id;
         return _ctx.ExerciseTemplates.Where(x => x.Id == id && x.OwnerId == ownerID).SingleOrDefault();
-    }
-
-
-
-    private Dtos.ExerciseTemplate ToModel(ExerciseTemplate exerciseTemplate)
-    {
-        return new Dtos.ExerciseTemplate(exerciseTemplate.Id, exerciseTemplate.Name, exerciseTemplate.Muscle, exerciseTemplate.Description);
-    }
-
-    
-}
-
-
-
-
-internal static class Extensions
-{
-    public static IQueryable<ExerciseTemplate> ApplyQueryParams(this IQueryable<ExerciseTemplate> query, ExerciseTemplateQueryParamResolver resolvedParams)
-    {
-        if (!string.IsNullOrEmpty(resolvedParams.Name))
-        {
-            query = query.Where(x => x.Name == resolvedParams.Name);
-        }
-        else if (!string.IsNullOrEmpty(resolvedParams.NameContains))
-        {
-            query = query.Where(x => x.Name.Contains(resolvedParams.NameContains));
-        }
-
-        if (!string.IsNullOrEmpty(resolvedParams.Muscle))
-        {
-            query = query.Where(x => x.Muscle == resolvedParams.Muscle);
-        }
-        else if (!string.IsNullOrEmpty(resolvedParams.MuscleContains))
-        {
-            query = query.Where(x => x.Muscle.Contains(resolvedParams.MuscleContains));
-        }
-
-        return query;
     }
 }

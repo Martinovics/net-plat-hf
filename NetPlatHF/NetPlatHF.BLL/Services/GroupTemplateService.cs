@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper;
+using AutoMapper.QueryableExtensions;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using NetPlatHF.BLL.Dtos;
 using NetPlatHF.BLL.Interfaces;
@@ -14,11 +16,13 @@ namespace NetPlatHF.BLL.Services;
 public class GroupTemplateService : IGroupTemplateService
 {
     private readonly AppDbContext _ctx;
+    private readonly IMapper _mapper;
 
 
-    public GroupTemplateService(AppDbContext context)
+    public GroupTemplateService(AppDbContext context, IMapper mapper)
     {
         _ctx = context;
+        _mapper = mapper;
     }
 
 
@@ -26,7 +30,11 @@ public class GroupTemplateService : IGroupTemplateService
 
     public IReadOnlyCollection<Dtos.GroupTemplate> ListTemplates()
     {
-        return _ctx.GroupTemplates.Include(x => x.Owner).Where(x => x.OwnerId == null).Select(ToModel).ToList();
+        return _ctx.GroupTemplates
+            .Include(x => x.Owner)
+            .Where(x => x.OwnerId == null)
+            .ProjectTo<Dtos.GroupTemplate>(_mapper.ConfigurationProvider)
+            .ToList();
     }
 
 
@@ -34,7 +42,11 @@ public class GroupTemplateService : IGroupTemplateService
 
     public IReadOnlyCollection<Dtos.GroupTemplate> ListUserTemplates(string userApiKey)
     {
-        return _ctx.GroupTemplates.Include(x => x.Owner).Where(x => x.Owner!.ApiKey == userApiKey).Select(ToModel).ToList();
+        return _ctx.GroupTemplates
+            .Include(x => x.Owner)
+            .Where(x => x.Owner!.ApiKey == userApiKey)
+            .ProjectTo<Dtos.GroupTemplate>(_mapper.ConfigurationProvider)
+            .ToList();
     }
 
 
@@ -53,8 +65,9 @@ public class GroupTemplateService : IGroupTemplateService
         _ctx.GroupTemplates.Add(template);
         _ctx.SaveChanges();
 
-        return ToModel(template);
+        return _mapper.Map<Dtos.GroupTemplate>(template);
     }
+
 
 
 
@@ -83,7 +96,7 @@ public class GroupTemplateService : IGroupTemplateService
         _ctx.GroupTemplates.Add(group);
         _ctx.SaveChanges();
 
-        return ToModel(group);
+        return _mapper.Map<Dtos.GroupTemplate>(group);
     }
 
 
@@ -101,7 +114,7 @@ public class GroupTemplateService : IGroupTemplateService
             template = GetUserTemplate(id, apiKey!);
         }
 
-        return template == null ? null : ToModel(template);
+        return template == null ? null : _mapper.Map<Dtos.GroupTemplate>(template);
     }
 
 
@@ -117,7 +130,7 @@ public class GroupTemplateService : IGroupTemplateService
         template.Description = newTemplate?.Description ?? template.Description;
 
         _ctx.SaveChanges();  // TODO ha nem sikerul frissiteni pl a name hossza miatt akkor dobhat hibat
-        return ToModel(template);
+        return _mapper.Map<Dtos.GroupTemplate>(template);
     }
 
 
@@ -132,7 +145,7 @@ public class GroupTemplateService : IGroupTemplateService
         _ctx.GroupTemplates.Remove(template);
         _ctx.SaveChanges();
 
-        return ToModel(template);
+        return _mapper.Map<Dtos.GroupTemplate>(template);
     }
 
 
@@ -145,6 +158,7 @@ public class GroupTemplateService : IGroupTemplateService
 
 
 
+
     private DAL.Entities.GroupTemplate? GetUserTemplate(int id, string apiKey)
     {
         var owner = GetOwner(apiKey);
@@ -154,18 +168,5 @@ public class GroupTemplateService : IGroupTemplateService
         var ownerID = owner.Id;
         return _ctx.GroupTemplates.Include(x => x.Exercises).Where(x => x.Id == id && x.OwnerId == ownerID).SingleOrDefault();
     }
-
-
-
-
-    private Dtos.GroupTemplate ToModel(DAL.Entities.GroupTemplate groupTemplate)
-    {
-        var exercises = new List<string>();
-        foreach (var exercise in groupTemplate.Exercises)
-            exercises.Add(exercise.Name);
-
-        return new Dtos.GroupTemplate(groupTemplate.Id, groupTemplate.Name, groupTemplate.Description, 0 < exercises.Count ? exercises : null);
-    }
-
 
 }

@@ -4,14 +4,12 @@ using Microsoft.EntityFrameworkCore;
 using NetPlatHF.API.Authentication;
 using NetPlatHF.API.Options;
 using NetPlatHF.BLL.Dtos;
-using NetPlatHF.DAL;
-using Microsoft.AspNetCore.Identity;
 using NetPlatHF.DAL.Data;
 using NetPlatHF.BLL.Interfaces;
 using NetPlatHF.BLL.Services;
-using NetPlatHF.BLL.QueryParamResolvers;
 using NetPlatHF.BLL.Classes;
 using System.Reflection;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,7 +20,8 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
 
-builder.Services.AddAutoMapper(typeof(AutoMapperProfile));  // a dto-hoz kell
+builder.Services.AddAutoMapper(typeof(MapperProfile));
+
 
 builder.Services.AddDbContext<AppDbContext>(
     options => options

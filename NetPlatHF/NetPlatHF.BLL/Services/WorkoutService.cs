@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper;
+using AutoMapper.QueryableExtensions;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.IdentityModel.Tokens;
 using NetPlatHF.BLL.Dtos;
@@ -15,11 +17,13 @@ namespace NetPlatHF.BLL.Services;
 public class WorkoutService : IWorkoutService
 {
     private readonly AppDbContext _ctx;
+    private readonly IMapper _mapper;
 
 
-    public WorkoutService(AppDbContext context)
+    public WorkoutService(AppDbContext context, IMapper mapper)
     {
         _ctx = context;
+        _mapper = mapper;
     }
 
 
@@ -27,7 +31,11 @@ public class WorkoutService : IWorkoutService
 
     public IReadOnlyCollection<Workout> List()
     {
-        return _ctx.Workouts.Include(x => x.Owner).Where(x => x.Owner == null).Select(ToModel).ToList();
+        return _ctx.Workouts
+            .Include(x => x.Owner)
+            .Where(x => x.Owner == null)
+            .ProjectTo<Dtos.Workout>(_mapper.ConfigurationProvider)
+            .ToList();
     }
 
 
@@ -35,7 +43,12 @@ public class WorkoutService : IWorkoutService
 
     public IReadOnlyCollection<Workout> ListSelf(string userApiKey)
     {
-        return _ctx.Workouts.Include(x => x.Owner).Include(x => x.Groups).Where(x => x.Owner!.ApiKey == userApiKey).Select(ToModel).ToList();
+        return _ctx.Workouts
+            .Include(x => x.Owner)
+            .Include(x => x.Groups)
+            .Where(x => x.Owner!.ApiKey == userApiKey)
+            .ProjectTo<Dtos.Workout>(_mapper.ConfigurationProvider)
+            .ToList();
     }
 
 
@@ -53,7 +66,7 @@ public class WorkoutService : IWorkoutService
             workout = GetUserWorkout(name, userApiKey!);
         }
 
-        return workout == null ? null : ToModel(workout);
+        return workout == null ? null : _mapper.Map<Dtos.Workout>(workout);
     }
 
 
@@ -77,7 +90,7 @@ public class WorkoutService : IWorkoutService
         _ctx.SaveChanges();
 
         _ctx.Workouts.Include(x => x.Groups);
-        return ToModel(workout);
+        return _mapper.Map<Dtos.Workout>(workout);
     }
 
 
@@ -108,7 +121,7 @@ public class WorkoutService : IWorkoutService
         workout.Groups.Add(group);
         _ctx.SaveChanges();
 
-        return ToModel(workout);
+        return _mapper.Map<Dtos.Workout>(workout);
     }
 
 
@@ -131,7 +144,7 @@ public class WorkoutService : IWorkoutService
         workout.Groups.Remove(group);
         _ctx.SaveChanges();
 
-        return ToModel(workout);
+        return _mapper.Map<Dtos.Workout>(workout);
     }
 
 
@@ -150,7 +163,7 @@ public class WorkoutService : IWorkoutService
         _ctx.Workouts.Remove(workout);
         _ctx.SaveChanges();
 
-        return ToModel(workout);
+        return _mapper.Map<Dtos.Workout>(workout);
     }
 
 
@@ -172,18 +185,5 @@ public class WorkoutService : IWorkoutService
 
         return _ctx.Workouts.Include(x => x.Owner).Include(x => x.Groups).Where(x => x.Name == name && x.OwnerId == owner.Id).SingleOrDefault();
     }
-
-
-
-
-    private static Dtos.Workout ToModel(DAL.Entities.Workout workout)
-    {
-        var groupNames = new List<string>();
-        foreach (var group in workout.Groups)
-            groupNames.Add(group.Name);
-
-        return new Dtos.Workout(workout.Name, groupNames);
-    }
-
 
 }

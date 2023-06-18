@@ -4,6 +4,8 @@ using NetPlatHF.BLL.Dtos;
 using NetPlatHF.BLL.Interfaces;
 using NetPlatHF.DAL.Data;
 using NetPlatHF.BLL.Exceptions;
+using AutoMapper.QueryableExtensions;
+using AutoMapper;
 
 namespace NetPlatHF.BLL.Services;
 
@@ -13,11 +15,13 @@ namespace NetPlatHF.BLL.Services;
 public class TemplateService : ITemplateService
 {
     private readonly AppDbContext _ctx;
+    private readonly IMapper _mapper;
 
 
-    public TemplateService(AppDbContext context)
+    public TemplateService(AppDbContext context, IMapper mapper)
     {
         _ctx = context;
+        _mapper = mapper;
     }
 
 
@@ -30,7 +34,7 @@ public class TemplateService : ITemplateService
             .Include(x => x.Group)
             .Include(x => x.Exercise)
             .Where(x => x.Owner == null)
-            .Select(x => ToModel(x.Id, x.Group, x.Exercise, x.Weight, x.Repetitions))
+            .ProjectTo<Dtos.Template>(_mapper.ConfigurationProvider)
             .ToList();
     }
 
@@ -44,7 +48,7 @@ public class TemplateService : ITemplateService
             .Include(x => x.Group)
             .Include(x => x.Exercise)
             .Where(x => x.Owner!.ApiKey == userApiKey)  // nem lehet null, csak filter utan hivjuk
-            .Select(x => ToModel(x.Id, x.Group, x.Exercise, x.Weight, x.Repetitions))
+            .ProjectTo<Dtos.Template>(_mapper.ConfigurationProvider)
             .ToList();
     }
 
@@ -80,7 +84,7 @@ public class TemplateService : ITemplateService
         _ctx.Templates.Add(template);
         _ctx.SaveChanges();
         
-        return ToModel(template.Id, group, exercise, createTemplate.Weight, createTemplate.Repetitions);
+        return _mapper.Map<Dtos.Template>(template);
     }
 
 
@@ -113,7 +117,7 @@ public class TemplateService : ITemplateService
         _ctx.Templates.Remove(template);
         _ctx.SaveChanges();
 
-        return ToModel(template.Id, template.Group, template.Exercise, template.Weight, template.Repetitions);
+        return _mapper.Map<Dtos.Template>(template);
     }
     
 
@@ -123,14 +127,5 @@ public class TemplateService : ITemplateService
     {
         return _ctx.Users.Where(u => u.ApiKey == userApiKey).SingleOrDefault();
     }
-
-
-
-
-    private static Dtos.Template ToModel(int id, DAL.Entities.GroupTemplate group, DAL.Entities.ExerciseTemplate exercise, int weight, int repetitions)
-    {
-        return new Dtos.Template(id, exercise.Id, exercise.Name, exercise.Muscle, exercise.Description, weight, repetitions, group.Id, group.Name, group.Description);
-    }
-
 
 }

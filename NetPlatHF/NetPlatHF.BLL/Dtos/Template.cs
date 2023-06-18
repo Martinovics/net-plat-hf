@@ -6,7 +6,7 @@
 public record Template(
     int Id,
     int ExerciseId,
-    string ErciseName,
+    string ExerciseName,
     string ExerciseMuscle,
     string ExerciseDescription,
     int Weight,

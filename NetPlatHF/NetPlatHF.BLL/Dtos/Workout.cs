@@ -3,5 +3,5 @@
 
 public record Workout(
     string Name,
-    IReadOnlyCollection<string> GroupName
+    IReadOnlyCollection<string> Groups
 );
