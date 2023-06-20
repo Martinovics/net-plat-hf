@@ -75,6 +75,11 @@ public class AppDbContext : IdentityDbContext<AppUser>
             .HasMany(w => w.Groups)
             .WithMany();
 
+        modelBuilder
+          .Entity<Workout>()
+          .Property(w => w.Difficulty)
+          .HasConversion<string>();
+
 
         // many-to-many templates  // TODO fel kell venni a workout-group kapcsolatot is
         modelBuilder.Entity<GroupExerciseTemplate>()

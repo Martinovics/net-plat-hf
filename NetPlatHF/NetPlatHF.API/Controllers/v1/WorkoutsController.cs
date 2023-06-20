@@ -92,20 +92,20 @@ public class WorkoutsController : ControllerBase
     /// <summary>
     /// Letrehoz egy edzest
     /// </summary>
-    /// <param name="name">Edzes neve</param>
+    /// <param name="createWorkout">A lerehozando edzes adatai</param>
     /// <returns>Letrejott edzes</returns>
     /// <response code="201">Edzes letrejott</response>
     /// <response code="400">Edzes nem jott letre</response>
-    [HttpPost("{name}")]
+    [HttpPost]
     [MapToApiVersion("1.0")]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ServiceFilter(typeof(ApiKeyAuthFilter))]
-    public ActionResult<BLL.Dtos.Template> Create(string name)
+    public ActionResult<BLL.Dtos.Template> Create([FromBody] CreateWorkout createWorkout)
     {
         try
         {
-            var workout = _workoutService.Create(new CreateWorkout(name), FetchApiKey(HttpContext));
+            var workout = _workoutService.Create(createWorkout, FetchApiKey(HttpContext));
             return CreatedAtAction(nameof(Get), new { name = workout.Name }, workout);
         }
         catch (Exception ex) when (ex is ArgumentException || ex is InvalidOwnerException || ex is DuplicateWorkoutException)

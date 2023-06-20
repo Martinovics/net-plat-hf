@@ -82,6 +82,7 @@ public class WorkoutService : IWorkoutService
         var workout = new DAL.Entities.Workout(createWorkout.Name)
         {
             Name = createWorkout.Name,
+            Difficulty = createWorkout.Difficulty,
             Owner = owner
         };
 
