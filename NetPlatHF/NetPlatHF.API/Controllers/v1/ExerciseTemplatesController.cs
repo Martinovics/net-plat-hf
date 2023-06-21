@@ -93,8 +93,8 @@ public class ExerciseTemplatesController : ControllerBase
     /// </summary>
     /// <param name="newTemplate">Letrehozando gyakorlat</param>
     /// <returns>Letrehozott gyakorlat</returns>
-    /// <response code="200">Sikeres letrehozas</response>
-    /// <response code="404">Sikertelen letrehozas</response>
+    /// <response code="201">Sikeres letrehozas</response>
+    /// <response code="400">Sikertelen letrehozas</response>
     [HttpPost]
     [MapToApiVersion("1.0")]
     [ProducesResponseType(StatusCodes.Status201Created)]
@@ -144,7 +144,7 @@ public class ExerciseTemplatesController : ControllerBase
     /// </summary>
     /// <param name="id">Torlendo gyakorlat azonositoja</param>
     /// <returns>No content</returns>
-    /// <response code="200">Sikeres torles</response>
+    /// <response code="204">Sikeres torles</response>
     /// <response code="404">Sikertelen torles</response>
     [HttpDelete("{id}")]
     [MapToApiVersion("1.0")]

@@ -32,8 +32,8 @@ public class GroupTemplatesController : ControllerBase
     /// </summary>
     /// <param name="newGroup">Letrehozando csoport es gyakorlatok</param>
     /// <returns>Letrehozott csoport es gyakorlatok</returns>
-    /// <response code="200">Sikeres letrehozas</response>
-    /// <response code="404">Sikertelen letrehozas</response>
+    /// <response code="201">Sikeres letrehozas</response>
+    /// <response code="400">Sikertelen letrehozas</response>
     [HttpPost]
     [MapToApiVersion("2.0")]
     [ProducesResponseType(StatusCodes.Status201Created)]
