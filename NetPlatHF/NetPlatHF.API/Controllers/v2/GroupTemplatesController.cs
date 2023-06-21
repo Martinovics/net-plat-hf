@@ -10,7 +10,7 @@ namespace NetPlatHF.API.Controllers.v2;
 
 
 [ApiController]
-[Route("api/v{version:apiVersion}/groups/templates")]
+[Route("api/v{version:apiVersion}/group/templates")]
 [ApiVersion("2.0")]
 public class GroupTemplatesController : ControllerBase
 {

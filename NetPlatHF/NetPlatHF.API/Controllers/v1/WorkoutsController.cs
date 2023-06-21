@@ -65,6 +65,33 @@ public class WorkoutsController : ControllerBase
     /// <summary>
     /// Visszaad egy edzest a neve alapjan
     /// </summary>
+    /// <param name="id">Edzes azonositoja</param>
+    /// <returns>Edzes</returns>
+    /// <response code="200">Edzes megtalalva</response>
+    /// <response code="404">Edzes nem talalhato</response>
+    [HttpGet("id/{id}")]
+    [MapToApiVersion("1.0")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public ActionResult<BLL.Dtos.Workout> Get(int id)
+    {
+        string? apiKey = null;
+        try
+        {
+            apiKey = FetchApiKey(HttpContext);
+        }
+        catch (Exception) { }
+
+        var template = _workoutService.GetById(id, apiKey);
+        return template != null ? Ok(template) : NotFound();
+    }
+
+
+
+
+    /// <summary>
+    /// Visszaad egy edzest a neve alapjan
+    /// </summary>
     /// <param name="name">Edzes neve</param>
     /// <returns>Edzes</returns>
     /// <response code="200">Edzes megtalalva</response>

@@ -67,9 +67,12 @@ public class AppDbContext : IdentityDbContext<AppUser>
 
         modelBuilder.Entity<Workout>()
             .ToTable("workouts");
-        
+
         modelBuilder.Entity<Workout>()
-            .HasKey(w => w.Name);
+            .HasKey(w => w.Id);
+
+        modelBuilder.Entity<Workout>()
+            .HasAlternateKey(w => w.Name);
 
         modelBuilder.Entity<Workout>()
             .HasMany(w => w.Groups)

@@ -14,6 +14,7 @@ public enum Difficulty
 
 public class Workout
 {
+    public int Id { get; set; }
     public string Name { get; set; }
     public Difficulty? Difficulty { get; set; }
     public ICollection<GroupTemplate> Groups { get; } = new List<GroupTemplate>();

@@ -54,6 +54,24 @@ public class WorkoutService : IWorkoutService
 
 
 
+    public Workout? GetById(int id, string? userApiKey)
+    {
+        DAL.Entities.Workout? workout;
+        if (userApiKey.IsNullOrEmpty())
+        {
+            workout = _ctx.Workouts.Include(x => x.Owner).Include(x => x.Groups).Where(x => x.Owner == null && x.Id == id).SingleOrDefault();
+        }
+        else
+        {
+            workout = GetUserWorkout(id, userApiKey!);
+        }
+
+        return workout == null ? null : _mapper.Map<Dtos.Workout>(workout);
+    }
+
+
+
+
     public Workout? GetByName(string name, string? userApiKey)
     {
         DAL.Entities.Workout? workout;
@@ -186,5 +204,16 @@ public class WorkoutService : IWorkoutService
 
         return _ctx.Workouts.Include(x => x.Owner).Include(x => x.Groups).Where(x => x.Name == name && x.OwnerId == owner.Id).SingleOrDefault();
     }
+
+
+    private DAL.Entities.Workout? GetUserWorkout(int id, string apiKey)
+    {
+        var owner = GetUser(apiKey);
+        if (owner == null)
+            return null;
+
+        return _ctx.Workouts.Include(x => x.Owner).Include(x => x.Groups).Where(x => x.Id == id && x.OwnerId == owner.Id).SingleOrDefault();
+    }
+
 
 }
